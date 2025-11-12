@@ -1,0 +1,13 @@
+.footer {
+  padding: 2rem 0;
+  margin-top: auto;
+}
+
+.footer-content {
+  text-align: center;
+  color: #6c757d;
+}
+
+.footer-content p {
+  margin: 0;
+}
