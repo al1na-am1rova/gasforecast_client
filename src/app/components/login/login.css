@@ -3,13 +3,13 @@ h3 {
     text-align: center;
     color: #2c3e50;
     font-size: 28px;
-    font-weight: 600;
+    font-weight: 500;
     margin-bottom: 30px;
     letter-spacing: -0.5px;
 }
 
 /* Контейнер формы */
-body > div {
+.login-container {
     background: white;
     padding: 40px;
     border-radius: 12px;
@@ -17,6 +17,7 @@ body > div {
     width: 100%;
     max-width: 400px;
     border: 1px solid #e1e8ed;
+    margin: 60px auto;
 }
 
 /* Отступы между элементами формы */
@@ -83,7 +84,7 @@ button[type="submit"] {
 
 /* Эффекты при наведении на кнопку */
 button[type="submit"]:hover {
-    background: linear-gradient(135deg, #2980b9 0%, #2573a7 100%);
+    background: #2573a7;
     transform: translateY(-1px);
     box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
 }

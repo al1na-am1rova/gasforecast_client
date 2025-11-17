@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
-import { AuthService } from '../../services/auth/auth.service';
+//import { AuthService } from '../../services/auth/auth.service';
+import {Router} from "@angular/router";
+import { log } from 'console';
 
 @Component({
   selector: 'app-login',
@@ -15,11 +17,16 @@ export class Login {
   
   msg = ''; // для отображения сообщений
 
-  constructor(private _auth: AuthService) {}
+  constructor(private router: Router){}
+  public goGasforecast() {
+    this.router.navigate(['/gasforecast']);
+    console.log('button click');
+  }
 
-  public onLogin() {
+  //constructor(private _auth: AuthService) {}
+
+  /*public onLogin() {
     this.msg = 'Loading...'; // сообщение о загрузке
-    
     this._auth.login({ ...this.loginData }).subscribe({
       next: (status) => {
         if (status === 200) {
@@ -35,5 +42,5 @@ export class Login {
         console.error('Login error:', error);
       }
     });
-  }
+  }*/
 }

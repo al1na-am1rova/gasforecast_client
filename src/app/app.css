@@ -9,6 +9,7 @@ body {
     justify-content: center;
     align-items: center;
 }
+
 /* Адаптивность для мобильных устройств */
 @media (max-width: 480px) {
     .login-container {
