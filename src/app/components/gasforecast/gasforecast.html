@@ -1,77 +1,92 @@
 <div class="container">
-  <!-- Левая панель с иерархией компонентов -->
   <div class="sidebar">
     <div class="sidebar-header">
-      <h3>Список элементов</h3>
+      <div class="header-tabs">
+        <div class="tab" [class.active]="activeTab === 'stations'" (click)="switchTab('stations')">
+          Электростанции
+        </div>
+        <div class="tab" [class.active]="activeTab === 'units'" (click)="switchTab('units')">
+          Электроагрегаты
+        </div>
+      </div>
     </div>
-    <div class="components-tree">
-      <ul class="tree">
-        <!-- ЭСН -->
-        <li class="tree-item">
-          <div class="tree-node" [class.expanded]="esnExpanded" (click)="toggleEsn()">
-            <span class="toggle-icon">{{ esnExpanded ? '−' : '+' }}</span>
-            <span class="component-name">ЭСН (Электроснабжение)</span>
-          </div>
-          <ul class="tree-subitems" *ngIf="esnExpanded">
-            <!-- Электроагрегат 1 -->
-            <li class="tree-item">
-              <div class="tree-node" [class.expanded]="aggregate1Expanded" (click)="toggleAggregate(1)">
-                <span class="toggle-icon">{{ aggregate1Expanded ? '−' : '+' }}</span>
-                <span class="component-name">Электроагрегат #1</span>
-              </div>
-              <ul class="tree-subitems" *ngIf="aggregate1Expanded">
-                <li class="tree-subitem">
-                  <span class="component-name">Генератор</span>
-                </li>
-                <li class="tree-subitem">
-                  <span class="component-name">Двигатель</span>
-                </li>
-                <li class="tree-subitem">
-                  <span class="component-name">Система охлаждения</span>
-                </li>
-              </ul>
-            </li>
-            
-            <!-- Электроагрегат 2 -->
-            <li class="tree-item">
-              <div class="tree-node" [class.expanded]="aggregate2Expanded" (click)="toggleAggregate(2)">
-                <span class="toggle-icon">{{ aggregate2Expanded ? '−' : '+' }}</span>
-                <span class="component-name">Электроагрегат #2</span>
-              </div>
-              <ul class="tree-subitems" *ngIf="aggregate2Expanded">
-                <li class="tree-subitem">
-                  <span class="component-name">Генератор</span>
-                </li>
-                <li class="tree-subitem">
-                  <span class="component-name">Двигатель</span>
-                </li>
-                <li class="tree-subitem">
-                  <span class="component-name">Система охлаждения</span>
-                </li>
-              </ul>
-            </li>
+    
+    <!-- Контент станций -->
+    <div class="tab-content" *ngIf="activeTab === 'stations'">
+      <div class="components-tree">
+        <ul class="tree">
+          <li *ngFor="let station of getStations" class="tree-item">
+            <div class="tree-node"  
+                 [class.selected]="selectedStation?.id === station.id"
+                 (click)="selectStation(station)">
+              <span class="component-name" [title]="station.name">{{station.name}}</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
 
-            <!-- Электроагрегат 3 -->
-            <li class="tree-item">
-              <div class="tree-node" [class.expanded]="aggregate3Expanded" (click)="toggleAggregate(3)">
-                <span class="toggle-icon">{{ aggregate3Expanded ? '−' : '+' }}</span>
-                <span class="component-name">Электроагрегат #3</span>
-              </div>
-              <ul class="tree-subitems" *ngIf="aggregate3Expanded">
-                <li class="tree-subitem">
-                  <span class="component-name">Генератор</span>
-                </li>
-                <li class="tree-subitem">
-                  <span class="component-name">Двигатель</span>
-                </li>
-                <li class="tree-subitem">
-                  <span class="component-name">Система охлаждения</span>
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </li>
-      </ul>
+    <!-- Контент электроагрегатов -->
+    <div class="tab-content" *ngIf="activeTab === 'units'">
+      <div class="components-tree">
+        <ul class="tree">
+          <li *ngFor="let unit of getUnits" class="tree-item">
+            <div class="tree-node"
+                 [class.selected]="selectedUnit?.id === unit.id"
+                 (click)="selectUnit(unit)"> <!-- Добавлен обработчик клика -->
+              <span class="component-name" [title]="unit.unitType">{{unit.unitType}}</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-panel">
+    <!-- Информация для электростанций -->
+    <div *ngIf="activeTab === 'stations' && selectedStation" class="details-container">
+      <div class="info-section">
+        <h3>{{selectedStation.name}}</h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Количество агрегатов в работе:</label>
+            <span class="value">{{selectedStation.activeUnitsCount}}</span>
+          </div>
+          <div class="info-item">
+            <label>Тип электроагрегатов:</label>
+            <span class="value">{{selectedStation.unitType}}</span>
+          </div>
+          <div class="info-item">
+            <label>Дата запуска:</label>
+            <span class="value">{{selectedStation.launchDate| date:'dd.MM.yyyy'}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Информация для электроагрегатов -->
+    <div *ngIf="activeTab === 'units' && selectedUnit" class="details-container">
+      <div class="info-section">
+        <h3>{{selectedUnit.unitType}}</h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Тип двигателя:</label>
+            <span class="value">{{selectedUnit.engineType}}</span>
+          </div>
+          <div class="info-item">
+            <label>Номинальная мощность:</label>
+            <span class="value">{{selectedUnit.ratedPower}} кВт</span>
+          </div>
+          <div class="info-item">
+            <label>Стандарт мощности:</label>
+            <span class="value">{{selectedUnit.standartPower}} кВт</span>
+          </div>
+          <div class="info-item">
+            <label>Норма расхода газа:</label>
+            <span class="value">{{selectedUnit.consumptionNorm}} м³/ч</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
