@@ -42,48 +42,70 @@
     </div>
   </div>
 
-  <div class="content-panel">
-    <!-- Информация для электростанций -->
-    <div *ngIf="activeTab === 'stations' && selectedStation" class="details-container">
-      <div class="info-section">
-        <h3>{{selectedStation.name}}</h3>
-        <div class="info-grid">
-          <div class="info-item">
-            <label>Количество агрегатов в работе:</label>
-            <span class="value">{{selectedStation.activeUnitsCount}}</span>
-          </div>
-          <div class="info-item">
-            <label>Тип электроагрегатов:</label>
-            <span class="value">{{selectedStation.unitType}}</span>
-          </div>
-          <div class="info-item">
-            <label>Дата запуска:</label>
-            <span class="value">{{selectedStation.launchDate| date:'dd.MM.yyyy'}}</span>
+
+  <!-- Основное содержимое (будет посередине) -->
+  <div class="main-content" [class.collapsed]="isPanelCollapsed">
+  </div>
+
+  <!-- Сворачиваемая правая панель -->
+  <div class="content-panel" *ngIf = "selectedStation || selectedUnit" [class.collapsed]="isPanelCollapsed">
+    <!-- Кнопка сворачивания -->
+    <div class="panel-toggle" (click)="togglePanel()">
+      <span class="toggle-icon" [class.collapsed]="isPanelCollapsed">i</span>
+    </div>
+
+    <!-- Содержимое панели -->
+    <div class="panel-content" *ngIf="!isPanelCollapsed">
+      <!-- Информация для электростанций -->
+      <div *ngIf="activeTab === 'stations' && selectedStation" class="details-container">
+        <div class="details-header">
+          <h2>{{selectedStation.name}}</h2>
+        </div>
+        
+        <div class="info-section">
+          <h3>Основные характеристики</h3>
+          <div class="properties-list compact">
+            <div class="property-item">
+              <span class="property-label">Количество агрегатов:</span>
+              <span class="property-value">{{selectedStation.activeUnitsCount}}</span>
+            </div>
+            <div class="property-item">
+              <span class="property-label">Тип агрегатов:</span>
+              <span class="property-value">{{selectedStation.unitType}}</span>
+            </div>
+            <div class="property-item">
+              <span class="property-label">Дата запуска:</span>
+              <span class="property-value">{{selectedStation.launchDate | date:'dd.MM.yyyy'}}</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Информация для электроагрегатов -->
-    <div *ngIf="activeTab === 'units' && selectedUnit" class="details-container">
-      <div class="info-section">
-        <h3>{{selectedUnit.unitType}}</h3>
-        <div class="info-grid">
-          <div class="info-item">
-            <label>Тип двигателя:</label>
-            <span class="value">{{selectedUnit.engineType}}</span>
-          </div>
-          <div class="info-item">
-            <label>Номинальная мощность:</label>
-            <span class="value">{{selectedUnit.ratedPower}} кВт</span>
-          </div>
-          <div class="info-item">
-            <label>Стандарт мощности:</label>
-            <span class="value">{{selectedUnit.standartPower}} кВт</span>
-          </div>
-          <div class="info-item">
-            <label>Норма расхода газа:</label>
-            <span class="value">{{selectedUnit.consumptionNorm}} м³/ч</span>
+      <!-- Информация для электроагрегатов -->
+      <div *ngIf="activeTab === 'units' && selectedUnit" class="details-container">
+        <div class="details-header">
+          <h2>{{selectedUnit.unitType}}</h2>
+        </div>
+        
+        <div class="info-section">
+          <h3>Технические характеристики</h3>
+          <div class="properties-list compact">
+            <div class="property-item">
+              <span class="property-label">Тип двигателя:</span>
+              <span class="property-value">{{selectedUnit.engineType}}</span>
+            </div>
+            <div class="property-item">
+              <span class="property-label">Ном. мощность:</span>
+              <span class="property-value">{{selectedUnit.ratedPower}} МВт</span>
+            </div>
+            <div class="property-item">
+              <span class="property-label">Станд. мощность:</span>
+              <span class="property-value">{{selectedUnit.standartPower}} МВт</span>
+            </div>
+            <div class="property-item">
+              <span class="property-label">Расход газа:</span>
+              <span class="property-value">{{selectedUnit.consumptionNorm}} м³/ч</span>
+            </div>
           </div>
         </div>
       </div>

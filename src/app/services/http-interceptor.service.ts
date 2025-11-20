@@ -4,7 +4,7 @@ import { SRV_URL } from '../config';
 export const httpInterceptor: HttpInterceptorFn = (req, next) => {
   let headers = req.headers;
   
-  if (req.url === "/weatherforecast/summaries") {
+  if (req.url === "/gasforecast") {
     const token = localStorage.getItem('token');
     if (token) {
       headers = headers.append('Authorization', `Bearer ${token}`);

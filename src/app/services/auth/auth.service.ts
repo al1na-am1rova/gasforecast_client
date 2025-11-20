@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { SRV_URL } from '../../config'; // теперь будет работать
+import { SRV_URL } from '../../config';
 import { Md5 } from 'ts-md5';
 import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
@@ -15,7 +15,6 @@ export class AuthService {
   constructor(private http: HttpClient) { }
 
   public login(info: { login: string, password: string }): Observable<number> {
-    // Создаем копию объекта вместо мутации исходного
     const loginData = {
       ...info,
       password: Md5.hashStr(info.password) as string

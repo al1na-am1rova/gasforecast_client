@@ -57,11 +57,17 @@ export class Gasforecast{
   activeTab: string = 'stations';
   selectedStation: Station | null = null;
   selectedUnit: Unit | null = null;
+  isPanelCollapsed = false;
+
+  togglePanel() {
+    this.isPanelCollapsed = !this.isPanelCollapsed;
+  }
 
   switchTab(tab: string) {
     this.activeTab = tab;
     this.selectedStation = null;
     this.selectedUnit = null;
+
   }
 
   selectStation(station: Station) {

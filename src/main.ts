@@ -8,6 +8,5 @@ import { provideRouter } from '@angular/router';
 
 bootstrapApplication(App, {
   providers: [
-    provideRouter(routes)
-  ]
-}).catch((err) => console.error(err));
+    provideRouter(routes),  provideHttpClient()]
+  }).catch((err) => console.error(err));
