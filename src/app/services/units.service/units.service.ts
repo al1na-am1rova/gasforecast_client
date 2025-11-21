@@ -19,4 +19,24 @@ export class UnitsService {
       catchError((error: HttpErrorResponse) => of(error.status))
     );
   }
+
+  public addUnit(info: {unitType: string, engineType:string, ratedPower:number, standartPower:number,consumptionNorm:number }): Observable<number> {
+    const newUnitData = {
+      unitType: info.unitType,
+      engineType: info.engineType,
+      ratedPower: info.ratedPower,
+      standartPower: info.standartPower,
+      consumptionNorm: info.consumptionNorm
+      };
+
+    return this.http.post<any>(`${this.apiUrl}/ElectricalUnitPassport/create`, newUnitData, { observe: 'response' })
+      .pipe(
+        map(res => {
+          return res.status;
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return of(error.status);
+        })
+      );
+  }
 }

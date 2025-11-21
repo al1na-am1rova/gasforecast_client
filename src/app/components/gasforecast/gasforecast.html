@@ -22,6 +22,9 @@
               <span class="component-name" [title]="station.name">{{station.name}}</span>
             </div>
           </li>
+          <button type="button" class="add-button" (click)="openAddStationForm()" *ngIf="userRole==='admin'">
+            + Добавить ЭСН
+          </button>
         </ul>
       </div>
     </div>
@@ -33,22 +36,24 @@
           <li *ngFor="let unit of units" class="tree-item">
             <div class="tree-node"
                  [class.selected]="selectedUnit?.id === unit.id"
-                 (click)="selectUnit(unit)"> <!-- Добавлен обработчик клика -->
+                 (click)="selectUnit(unit)">
               <span class="component-name" [title]="unit.unitType">{{unit.unitType}}</span>
             </div>
           </li>
+          <button type="button" class="add-button" (click)="openAddUnitForm()" *ngIf="userRole==='admin'">
+            + Добавить агрегат
+          </button>
         </ul>
       </div>
     </div>
   </div>
-
 
   <!-- Основное содержимое (будет посередине) -->
   <div class="main-content" [class.collapsed]="isPanelCollapsed">
   </div>
 
   <!-- Сворачиваемая правая панель -->
-  <div class="content-panel" *ngIf = "selectedStation || selectedUnit" [class.collapsed]="isPanelCollapsed">
+  <div class="content-panel" *ngIf="selectedStation || selectedUnit" [class.collapsed]="isPanelCollapsed">
     <!-- Кнопка сворачивания -->
     <div class="panel-toggle" (click)="togglePanel()">
       <span class="toggle-icon" [class.collapsed]="isPanelCollapsed">i</span>
@@ -110,5 +115,151 @@
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- Модальное окно для добавления станции -->
+<div class="modal-overlay" *ngIf="showAddStationForm" (click)="closeAddStationForm()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Добавление новой электростанции</h3>
+      <button class="close-button" (click)="closeAddStationForm()">&times;</button>
+    </div>
+    
+    <form class="add-station-form" #stationForm="ngForm">
+      <div class="form-group">
+        <label for="stationName">Название станции *</label>
+        <input type="text" id="stationName" 
+               [(ngModel)]="newStation.name" 
+               name="stationName"
+               required
+               placeholder="Введите название станции">
+      </div>
+
+      <div class="form-group">
+        <label for="unitType">Тип агрегатов *</label>
+        <select id="unitType" 
+                [(ngModel)]="newStation.unitType" 
+                name="unitType"
+                required>
+          <option value="">Выберите тип агрегатов</option>
+          <option *ngFor="let unit of units" [value]="unit.unitType">
+            {{unit.unitType}}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="activeUnitsCount">Количество агрегатов *</label>
+        <input type="number" id="activeUnitsCount" 
+               [(ngModel)]="newStation.activeUnitsCount" 
+               name="activeUnitsCount"
+               required
+               min="1"
+               max="20"
+               placeholder="Введите количество">
+      </div>
+
+      <div class="form-group">
+        <label for="launchDate">Дата запуска *</label>
+        <input type="date" id="launchDate" 
+               [(ngModel)]="newStation.launchDate" 
+               name="launchDate"
+               required>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-cancel" (click)="closeAddStationForm()">Отмена</button>
+        <button type="button" class="btn-submit" 
+                [disabled]="!stationForm.form.valid"
+                (click)="addStation()">
+          Добавить станцию
+        </button>
+        <div *ngIf="stMsg" class="message" [class.error]="stMsg !== 'Success'">
+        {{stMsg}}
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Модальное окно для добавления агрегата -->
+<div class="modal-overlay" *ngIf="showAddUnitForm" (click)="closeAddUnitForm()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Добавление нового электроагрегата</h3>
+      <button class="close-button" (click)="closeAddUnitForm()">&times;</button>
+    </div>
+    
+    <form class="add-station-form" #unitForm="ngForm">
+      <div class="form-group">
+        <label for="unitType">Тип агрегата *</label>
+        <input type="text" id="unitType" 
+               [(ngModel)]="newUnit.unitType" 
+               name="unitType"
+               required
+               placeholder="Введите тип агрегата">
+      </div>
+
+      <div class="form-group">
+        <label for="engineType">Тип двигателя *</label>
+        <select id="engineType" 
+                [(ngModel)]="newUnit.engineType" 
+                name="engineType"
+                required>
+          <option value="">Выберите тип двигателя</option>
+          <option value="Газотурбинный">Газотурбинный</option>
+          <option value="Поршневой">Поршневой</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="ratedPower">Номинальная мощность (МВт) *</label>
+        <input type="number" id="ratedPower" 
+               [(ngModel)]="newUnit.ratedPower" 
+               name="ratedPower"
+               required
+               min="0.1"
+               max="100"
+               step="0.1"
+               placeholder="Введите номинальную мощность">
+      </div>
+
+      <div class="form-group">
+        <label for="standartPower">Стандартная мощность (МВт) *</label>
+        <input type="number" id="standartPower" 
+               [(ngModel)]="newUnit.standartPower" 
+               name="standartPower"
+               required
+               min="0.1"
+               max="100"
+               step="0.1"
+               placeholder="Введите стандартную мощность">
+      </div>
+
+      <div class="form-group">
+        <label for="consumptionNorm">Норма расхода газа (м³/ч) *</label>
+        <input type="number" id="consumptionNorm" 
+               [(ngModel)]="newUnit.consumptionNorm" 
+               name="consumptionNorm"
+               required
+               min="1"
+               max="10000"
+               step="1"
+               placeholder="Введите норму расхода газа">
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-cancel" (click)="closeAddUnitForm()">Отмена</button>
+        <button type="button" class="btn-submit" 
+                [disabled]="!unitForm.form.valid"
+                (click)="addUnit()">
+          Добавить агрегат
+        </button>
+        <div *ngIf="uMsg" class="message" [class.error]="uMsg !== 'Success'">
+        {{uMsg}}
+        </div>
+      </div>
+    </form>
   </div>
 </div>

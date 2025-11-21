@@ -26,7 +26,7 @@ export class AuthService {
             const token = res.body.accessToken;
             localStorage.setItem("token", token);
             const role = res.body.role;
-            localStorage.setItem("role", role);
+            localStorage.setItem("userRole", role);
 
              console.log(token, role);
           }

@@ -1,15 +1,16 @@
-import { Component } from '@angular/core';
+import { Component} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {Station, Unit} from './gasforecastModels';
 import { StationsService} from '../../services/stations.service/stations.service';
 import { UnitsService} from '../../services/units.service/units.service';
 import {Router} from "@angular/router";
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-gasforecast',
   templateUrl: './gasforecast.html',
   styleUrls: ['./gasforecast.css'],
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   standalone: true
 })
 export class Gasforecast{
@@ -19,6 +20,7 @@ constructor(private router: Router , private _stations: StationsService, private
 ngOnInit() {
   this.loadStations();
   this.loadUnits();
+  this.userRole = localStorage.getItem('userRole') || null;
 }
 
 ngOnUpdate() {
@@ -77,6 +79,24 @@ ngOnUpdate() {
   uMsg: string = '';
   stations: Station[] = [];
   units: Unit[] = [];
+  userRole: string|null = null;
+
+  showAddStationForm = false;
+  newStation = {
+    name: '',
+    unitType: '',
+    launchDate: '',
+    activeUnitsCount: 1
+  };
+
+  showAddUnitForm = false;
+  newUnit = {
+    unitType: '',
+    engineType: '',
+    ratedPower: 0,
+    standartPower:0,
+    consumptionNorm:0
+  };
 
   togglePanel() {
     this.isPanelCollapsed = !this.isPanelCollapsed;
@@ -129,4 +149,98 @@ ngOnUpdate() {
   });
   }
 
+  //методы для формы агрегата
+  openAddUnitForm() {
+    this.showAddUnitForm = true;
+    // Сброс формы
+    this.newUnit = {
+    unitType: '',
+    engineType: '',
+    ratedPower: 0,
+    standartPower:0,
+    consumptionNorm:0
+  };
+  }
+
+  closeAddUnitForm() {
+   this.showAddUnitForm = false;
+    this.newUnit = {
+    unitType: '',
+    engineType: '',
+    ratedPower: 0,
+    standartPower:0,
+    consumptionNorm:0
+  };
+  }
+
+  private isUnitFormValid(): boolean {
+    return !!this.newUnit.unitType && 
+           !!this.newUnit.engineType && 
+           !!this.newUnit.ratedPower && 
+           !!this.newUnit.standartPower &&
+           !!this.newUnit.consumptionNorm;
+  }
+
+  public addUnit() {
+    this._units.addUnit({ ...this.newUnit}).subscribe({
+      next: (status) => {
+        if (status === 201) {
+          this.uMsg = "Success";
+          this.closeAddUnitForm();
+          this.loadUnits();
+        } else {
+          this.uMsg = `Something went wrong (${status})`;
+        }
+      },
+      error: (error) => {
+        this.uMsg = "Connection error. Please try again.";
+      }
+    });
+}
+
+// Новые методы для формы
+  openAddStationForm() {
+    this.showAddStationForm = true;
+    // Сброс формы
+    this.newStation = {
+      name: '',
+      unitType: '',
+      launchDate: '',
+      activeUnitsCount: 1
+    };
+  }
+
+  closeAddStationForm() {
+    this.showAddStationForm = false;
+    this.newStation = {
+      name: '',
+      unitType: '',
+      launchDate: '',
+      activeUnitsCount: 1
+    };
+  }
+
+  private isStationFormValid(): boolean {
+    return !!this.newStation.name && 
+           !!this.newStation.unitType && 
+           !!this.newStation.activeUnitsCount && 
+           !!this.newStation.launchDate;
+  }
+
+  public addStation() {
+    this._stations.addStation({ ...this.newStation}).subscribe({
+      next: (status) => {
+        if (status === 201) {
+          this.stMsg = "Success";
+          this.closeAddStationForm();
+          this.loadStations();
+        } else {
+          this.stMsg = `Something went wrong (${status})`;
+        }
+      },
+      error: (error) => {
+        this.stMsg = "Connection error. Please try again.";
+      }
+    });
+}
 }

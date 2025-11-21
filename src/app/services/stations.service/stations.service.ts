@@ -22,4 +22,23 @@ export class StationsService {
     );
   }
 
+  public addStation(info: {name: string, unitType: string, launchDate:string, activeUnitsCount:number }): Observable<number> {
+    const newStationData = {
+      name: info.name,
+      unitType: info.unitType,
+      launchDate:info.launchDate,
+      activeUnitsCount:info.activeUnitsCount
+      };
+
+    return this.http.post<any>(`${this.apiUrl}/ElectricityPowerStation/add`, newStationData, { observe: 'response' })
+      .pipe(
+        map(res => {
+          return res.status;
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return of(error.status);
+        })
+      );
+  }
+
 }
