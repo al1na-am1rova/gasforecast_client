@@ -1,17 +1,19 @@
 import { Component } from '@angular/core';
-import { AuthService } from '../../services/auth/auth.service';
+import { AuthService } from '../../services/auth.service/auth.service';
 import {Router} from "@angular/router";
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-login',
   templateUrl: 'login.html',
   styleUrls: ['login.css'],
-  standalone:true
+  standalone:true,
+  imports: [FormsModule]
 })
 export class Login {
   
   loginData = {
-  login: '',
+  username: '',
   password: ''
   };
   
@@ -24,12 +26,14 @@ export class Login {
 
   public onLogin() {
     this.msg = 'Loading...'; // сообщение о загрузке
+
     this.auth.login({ ...this.loginData }).subscribe({
       next: (status) => {
         if (status === 200) {
           this.msg = "Success";
+          this.goGasforecast();
         } else if (status === 401) {
-          this.msg = "Wrong login/password";
+          this.msg = "Wrong username/password";
         } else {
           this.msg = `Something went wrong (${status})`;
         }

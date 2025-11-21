@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {Station, Unit} from './gasforecastModels';
+import { StationsService} from '../../services/stations.service/stations.service';
+import { UnitsService} from '../../services/units.service/units.service';
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-gasforecast',
@@ -11,7 +14,19 @@ import {Station, Unit} from './gasforecastModels';
 })
 export class Gasforecast{
 
-  stations: Station[] = [
+constructor(private router: Router , private _stations: StationsService, private _units: UnitsService){}
+
+ngOnInit() {
+  this.loadStations();
+  this.loadUnits();
+}
+
+ngOnUpdate() {
+  this.loadStations();
+  this.loadUnits();
+}
+
+  /*stations: Station[] = [
     {
       id: 1,
       name: 'ЭСН1',
@@ -33,9 +48,9 @@ export class Gasforecast{
       unitType: 'тип 3',
       launchDate: new Date('2020-12-11')
     }
-  ]
+  ]*/
 
-  units: Unit[] = [
+  /*units: Unit[] = [
   {
   id: 1,
   unitType: 'тип1',
@@ -52,12 +67,16 @@ export class Gasforecast{
   standartPower: 2,
   consumptionNorm: 2,
   },
-  ]
+  ]*/
 
   activeTab: string = 'stations';
   selectedStation: Station | null = null;
   selectedUnit: Unit | null = null;
   isPanelCollapsed = false;
+  stMsg: string = '';
+  uMsg: string = '';
+  stations: Station[] = [];
+  units: Unit[] = [];
 
   togglePanel() {
     this.isPanelCollapsed = !this.isPanelCollapsed;
@@ -80,13 +99,34 @@ export class Gasforecast{
     this.selectedStation = null;
   }
 
-
-  get getStations(): Station[] {
-     return this.stations;
+  public loadStations() {
+  this._stations.getStations.subscribe({
+    next: (result) => {
+      if (typeof result === 'number') {
+        this.stMsg = "Connection error. Please try again.";
+      } else {
+        this.stations = result;
+      }
+    },
+    error: (error) => {
+      this.stMsg = "Connection error. Please try again.";
+    }
+  });
   }
 
-  get getUnits(): Unit[] {
-     return this.units;
+   public loadUnits()  {
+    this._units.getUnits.subscribe({
+    next: (result) => {
+      if (typeof result === 'number') {
+        this.uMsg = "Connection error. Please try again.";
+      } else {
+        this.units = result;
+      }
+    },
+    error: (error) => {
+      this.uMsg = "Connection error. Please try again.";
+    }
+  });
   }
 
 }

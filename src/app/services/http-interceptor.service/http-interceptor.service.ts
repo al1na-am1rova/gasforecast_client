@@ -1,10 +1,11 @@
 import { HttpInterceptorFn } from '@angular/common/http';
-import { SRV_URL } from '../config';
+import { SRV_URL } from '../../config';
 
 export const httpInterceptor: HttpInterceptorFn = (req, next) => {
   let headers = req.headers;
+  console.log(headers);
   
-  if (req.url === "/gasforecast") {
+  if (req.url.includes('Electric')) {
     const token = localStorage.getItem('token');
     if (token) {
       headers = headers.append('Authorization', `Bearer ${token}`);

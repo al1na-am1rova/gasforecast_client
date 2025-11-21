@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { SRV_URL } from '../../config';
 import { Md5 } from 'ts-md5';
 import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
@@ -10,21 +9,26 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 })
 export class AuthService {
 
-  private apiUrl = `${SRV_URL}/api`;
+  private apiUrl = `/api`;
 
   constructor(private http: HttpClient) { }
 
-  public login(info: { login: string, password: string }): Observable<number> {
+  public login(info: { username: string, password: string }): Observable<number> {
     const loginData = {
-      ...info,
-      password: Md5.hashStr(info.password) as string
-    };
+      username: info.username,
+      password: info.password
+      };
 
-    return this.http.post<any>(`${this.apiUrl}/auth/`, loginData, { observe: 'response' })
+    return this.http.post<any>(`${this.apiUrl}/Account/login`, loginData, { observe: 'response' })
       .pipe(
         map(res => {
           if (res.status === 200) {
-            localStorage.setItem("token", res.body.token);
+            const token = res.body.accessToken;
+            localStorage.setItem("token", token);
+            const role = res.body.role;
+            localStorage.setItem("role", role);
+
+             console.log(token, role);
           }
           return res.status;
         }),

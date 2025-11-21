@@ -15,7 +15,7 @@
     <div class="tab-content" *ngIf="activeTab === 'stations'">
       <div class="components-tree">
         <ul class="tree">
-          <li *ngFor="let station of getStations" class="tree-item">
+          <li *ngFor="let station of stations" class="tree-item">
             <div class="tree-node"  
                  [class.selected]="selectedStation?.id === station.id"
                  (click)="selectStation(station)">
@@ -30,7 +30,7 @@
     <div class="tab-content" *ngIf="activeTab === 'units'">
       <div class="components-tree">
         <ul class="tree">
-          <li *ngFor="let unit of getUnits" class="tree-item">
+          <li *ngFor="let unit of units" class="tree-item">
             <div class="tree-node"
                  [class.selected]="selectedUnit?.id === unit.id"
                  (click)="selectUnit(unit)"> <!-- Добавлен обработчик клика -->
