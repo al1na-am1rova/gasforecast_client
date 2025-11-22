@@ -4,7 +4,11 @@
     <!-- Левая панель -->
     <div class="sidebar">
       <div class="sidebar-header">
-        <div class = "header-tabs">Электростанции</div>
+        <div class = "header-tabs">Электростанции
+          <button type="button" class="add-button-header" (click)="openAddStationForm()" *ngIf="userRole==='admin'">
+              + Добавить
+          </button>
+        </div>
       </div>      
     </div>
 
@@ -44,7 +48,8 @@
                     </svg>
                   </button>
                   <button *ngIf="userRole==='admin'" 
-                          (click)="$event.stopPropagation(); editStation(station)"
+                          (click)="$event.stopPropagation(); isStationEditing = true; selectStation(station);
+                          openAddStationForm()"
                           class="edit-icon"
                           title="Редактировать станцию">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -55,9 +60,6 @@
                 </div>
               </div>
             </li>
-            <button type="button" class="add-button" (click)="openAddStationForm()" *ngIf="userRole==='admin'">
-              + Добавить ЭСН
-            </button>
           </ul>
         </div>
       </div>
@@ -69,6 +71,11 @@
       <div *ngIf="showUnitsTable" class="units-table-container">   
         <div class="table-wrapper">
           <div class="table-scroll-container">
+            <div class="add-unit-button-container" *ngIf="userRole==='admin'">
+            <button type="button" class="add-button" (click)="openAddUnitForm()">
+              + Добавить электроагрегат
+            </button>
+          </div>
             <table class="units-table">
               <thead>
                 <tr>
@@ -78,6 +85,11 @@
                   <th>Станд. мощность (МВт)</th>
                   <th>Расход газа (м³/ч)</th>
                   <th *ngIf="userRole==='admin'">Действия</th>
+                  <th *ngIf="userRole==='admin'">
+                    <button type="button" class="add-button" (click)="openAddUnitForm()">
+                      + Добавить
+                    </button>
+                  </th>
                   <th>
                     <button type="button" class="btn-close" (click)="closeUnitsTable()" title="Закрыть таблицу">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -96,7 +108,7 @@
                   <td>{{unit.standartPower}}</td>
                   <td>{{unit.consumptionNorm}}</td>
                   <td *ngIf="userRole==='admin'" class="actions-cell">
-                    <button (click)="editUnit(unit)"
+                    <button (click)="editingUnit = unit; openAddUnitForm()"
                             class="edit-icon"
                             title="Редактировать агрегат">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -115,8 +127,8 @@
                 </tr>
               </tbody>
             </table>
-          </div>
         </div>
+      </div>
       </div>
 
       <!-- Сворачиваемая правая панель -->
@@ -162,7 +174,8 @@
 <div class="modal-overlay" *ngIf="showAddStationForm" (click)="closeAddStationForm()">
   <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h3>Добавление новой электростанции</h3>
+      <h3 *ngIf = "isStationEditing === false">Добавление новой электростанции</h3>
+      <h3 *ngIf = "isStationEditing === true">Редактирование электростанции</h3>
       <button class="close-button" (click)="closeAddStationForm()">&times;</button>
     </div>
     
@@ -173,7 +186,7 @@
                [(ngModel)]="newStation.name" 
                name="stationName"
                required
-               placeholder="Введите название станции">
+               placeholder='Введите название'>
       </div>
 
       <div class="form-group">
@@ -197,7 +210,7 @@
                required
                min="1"
                max="20"
-               placeholder="Введите количество">
+               placeholder='Введите количество'>
       </div>
 
       <div class="form-group">
@@ -212,8 +225,8 @@
         <button type="button" class="btn-cancel" (click)="closeAddStationForm()">Отмена</button>
         <button type="button" class="btn-submit" 
                 [disabled]="!stationForm.form.valid"
-                (click)="addStation()">
-          Добавить станцию
+                (click)="isStationEditing ? editStation() : addUnit()">
+                {{ isStationEditing ? 'Сохранить изменения' : 'Добавить агрегат' }}
         </button>
         <div *ngIf="stMsg" class="message" [class.error]="stMsg !== 'Success'">
           {{stMsg}}
@@ -227,7 +240,8 @@
 <div class="modal-overlay" *ngIf="showAddUnitForm" (click)="closeAddUnitForm()">
   <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h3>Добавление нового электроагрегата</h3>
+      <h3 *ngIf = "!editingUnit">Добавление нового электроагрегата</h3>
+      <h3 *ngIf = "editingUnit">Редактирование электроагрегата</h3>
       <button class="close-button" (click)="closeAddUnitForm()">&times;</button>
     </div>
     
@@ -260,7 +274,7 @@
                name="ratedPower"
                required
                min="0.1"
-               max="100"
+               max="100000"
                step="0.1"
                placeholder="Введите номинальную мощность">
       </div>
@@ -272,7 +286,7 @@
                name="standartPower"
                required
                min="0.1"
-               max="100"
+               max="100000"
                step="0.1"
                placeholder="Введите стандартную мощность">
       </div>
@@ -283,9 +297,9 @@
                [(ngModel)]="newUnit.consumptionNorm" 
                name="consumptionNorm"
                required
-               min="1"
-               max="10000"
-               step="1"
+               min="0"
+               max="1000"
+               step="0.01"
                placeholder="Введите норму расхода газа">
       </div>
 
@@ -293,8 +307,8 @@
         <button type="button" class="btn-cancel" (click)="closeAddUnitForm()">Отмена</button>
         <button type="button" class="btn-submit" 
                 [disabled]="!unitForm.form.valid"
-                (click)="addUnit()">
-          Добавить агрегат
+                (click)="editingUnit ? editUnit() : addUnit()">
+                {{editingUnit ? 'Сохранить изменения' : 'Добавить агрегат' }}
         </button>
         <div *ngIf="uMsg" class="message" [class.error]="uMsg !== 'Success'">
           {{uMsg}}

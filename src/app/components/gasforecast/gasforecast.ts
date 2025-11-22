@@ -71,7 +71,6 @@ ngOnUpdate() {
   },
   ]*/
 
-  activeTab: string = 'stations';
   selectedStation: Station | null = null;
   selectedUnit: Unit | null = null;
   isPanelCollapsed = false;
@@ -80,8 +79,12 @@ ngOnUpdate() {
   stations: Station[] = [];
   units: Unit[] = [];
   userRole: string|null = null;
-
-   showUnitsTable = false;
+  showUnitsTable = false;
+  showAddStationForm = false;
+  showAddUnitForm = false;
+  selectedStationId: number = 0;
+  isStationEditing: boolean = false;
+  editingUnit:Unit|null = null;
 
   // Методы для управления таблицей
   openUnitsTable() {
@@ -94,7 +97,6 @@ ngOnUpdate() {
     this.showUnitsTable = false;
   }
 
-  showAddStationForm = false;
   newStation = {
     name: '',
     unitType: '',
@@ -102,7 +104,6 @@ ngOnUpdate() {
     activeUnitsCount: 1
   };
 
-  showAddUnitForm = false;
   newUnit = {
     unitType: '',
     engineType: '',
@@ -115,21 +116,11 @@ ngOnUpdate() {
     this.isPanelCollapsed = !this.isPanelCollapsed;
   }
 
-  switchTab(tab: string) {
-    this.activeTab = tab;
-    this.selectedStation = null;
-    this.selectedUnit = null;
-
-  }
-
   selectStation(station: Station) {
     this.selectedStation = station;
+    this.selectedStationId = station.id;
+    console.log(this.selectedStation);
     this.selectedUnit = null;
-  }
-
-  selectUnit(unit: Unit) {
-    this.selectedUnit = unit;
-    this.selectedStation = null;
   }
 
   public loadStations() {
@@ -167,33 +158,34 @@ ngOnUpdate() {
   //методы для формы агрегата
   openAddUnitForm() {
     this.showAddUnitForm = true;
-    // Сброс формы
+    if (this.editingUnit) {
+    this.newUnit = {
+    unitType: this.editingUnit.unitType,
+    engineType: this.editingUnit.engineType,
+    ratedPower: this.editingUnit.ratedPower,
+    standartPower: this.editingUnit.standartPower,
+    consumptionNorm:this.editingUnit.consumptionNorm
+    };}
+    else {
     this.newUnit = {
     unitType: '',
     engineType: '',
     ratedPower: 0,
     standartPower:0,
     consumptionNorm:0
-  };
+    };}
   }
 
   closeAddUnitForm() {
    this.showAddUnitForm = false;
-    this.newUnit = {
+   this.editingUnit = null;
+   this.newUnit = {
     unitType: '',
     engineType: '',
     ratedPower: 0,
     standartPower:0,
     consumptionNorm:0
   };
-  }
-
-  private isUnitFormValid(): boolean {
-    return !!this.newUnit.unitType && 
-           !!this.newUnit.engineType && 
-           !!this.newUnit.ratedPower && 
-           !!this.newUnit.standartPower &&
-           !!this.newUnit.consumptionNorm;
   }
 
   public addUnit() {
@@ -220,30 +212,31 @@ ngOnUpdate() {
 // Новые методы для формы
   openAddStationForm() {
     this.showAddStationForm = true;
-    // Сброс формы
+    if (this.isStationEditing && this.selectedStation) {
+      this.newStation = {
+      name: this.selectedStation.name,
+      unitType: this.selectedStation.unitType,
+      launchDate: this.selectedStation.launchDate,
+      activeUnitsCount: this.selectedStation.activeUnitsCount
+    };}
+    else{
     this.newStation = {
       name: '',
       unitType: '',
       launchDate: '',
       activeUnitsCount: 1
-    };
+    };}
   }
 
   closeAddStationForm() {
     this.showAddStationForm = false;
+    this.isStationEditing = false;
     this.newStation = {
       name: '',
       unitType: '',
       launchDate: '',
       activeUnitsCount: 1
     };
-  }
-
-  private isStationFormValid(): boolean {
-    return !!this.newStation.name && 
-           !!this.newStation.unitType && 
-           !!this.newStation.activeUnitsCount && 
-           !!this.newStation.launchDate;
   }
 
   public addStation() {
@@ -309,11 +302,50 @@ ngOnUpdate() {
     });
   }
 
-  public editStation(st:Station){
-
+  public editStation(){
+    this._stations.editStation(this.selectedStationId, ({ ...this.newStation})).subscribe({
+      next: (status) => {
+        if (status === 200) {
+          this.stMsg = "Success";
+          this.closeAddStationForm();
+          this.loadStations(); 
+        } 
+        else if (status == 401) {
+        this.router.navigate(['/login']);
+        }
+        else {
+          this.stMsg = `Something went wrong (${status})`;
+        }
+      },
+      error: (error) => {
+        this.stMsg = "Connection error. Please try again.";
+      }
+    });
   }
 
-  public editUnit(u:Unit){
-
+  public editUnit(){
+  if (this.editingUnit) {
+  this._units.editUnit(this.editingUnit.id, { ...this.newUnit}).subscribe({
+      next: (status) => {
+        if (status === 200) {
+          this.uMsg = "Success";
+          this.closeAddUnitForm();
+          this.loadUnits();
+        } 
+        else if (status == 401) {
+        this.router.navigate(['/login']);
+        }
+        else {
+          this.uMsg = `Something went wrong (${status})`;
+        }
+      },
+      error: (error) => {
+        this.uMsg = "Connection error. Please try again.";
+      }
+    });
   }
+  else {
+    this.uMsg = `Something went wrong`;
+  }
+}
 }

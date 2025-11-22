@@ -61,7 +61,7 @@ export class UnitsService {
       consumptionNorm: info.consumptionNorm
       };
 
-    return this.http.put<any>(`${this.apiUrl}/ElectricalUnitPassport/update${id}`, newUnitData, { observe: 'response' })
+    return this.http.put<any>(`${this.apiUrl}/ElectricalUnitPassport/update/${id}`, newUnitData, { observe: 'response' })
       .pipe(
         map(res => {
           return res.status;

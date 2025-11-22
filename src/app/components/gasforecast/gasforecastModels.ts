@@ -3,7 +3,7 @@ export interface Station {
   name: string;
   activeUnitsCount: number;
   unitType: string;
-  launchDate: Date;
+  launchDate: string;
 }
 
 export interface Unit {

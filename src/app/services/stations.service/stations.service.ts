@@ -61,7 +61,7 @@ export class StationsService {
       activeUnitsCount:info.activeUnitsCount
       };
 
-    return this.http.put<any>(`${this.apiUrl}/ElectricityPowerStation/update${id}`, newStationData, { observe: 'response' })
+    return this.http.put<any>(`${this.apiUrl}/ElectricityPowerStation/update/${id}`, newStationData, { observe: 'response' })
       .pipe(
         map(res => {
           return res.status;
