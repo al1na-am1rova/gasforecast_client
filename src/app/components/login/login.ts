@@ -20,9 +20,6 @@ export class Login {
   msg = ''; // для отображения сообщений
 
   constructor(private router: Router , private auth: AuthService){}
-  public goGasforecast() {
-    this.router.navigate(['/gasforecast']);
-  }
 
   public onLogin() {
     this.msg = 'Loading...'; // сообщение о загрузке
@@ -31,7 +28,7 @@ export class Login {
       next: (status) => {
         if (status === 200) {
           this.msg = "Success";
-          this.goGasforecast();
+          this.router.navigate(['/gasforecast']);
         } else if (status === 401) {
           this.msg = "Wrong username/password";
         } else {

@@ -38,5 +38,37 @@ export class UnitsService {
           return of(error.status);
         })
       );
-  }
+    }
+
+  public deleteUnit(id:number): Observable<number> {
+  return this.http.delete<any>(`${this.apiUrl}/ElectricalUnitPassport/delete/${id}`, { observe: 'response' })
+      .pipe(
+        map(res => {
+          return res.status;
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return of(error.status);
+        })
+      );
+    }
+  
+    public editUnit(id:number, info: {unitType: string, engineType:string, ratedPower:number, standartPower:number,consumptionNorm:number }): Observable<number> {
+    const newUnitData = {
+      unitType: info.unitType,
+      engineType: info.engineType,
+      ratedPower: info.ratedPower,
+      standartPower: info.standartPower,
+      consumptionNorm: info.consumptionNorm
+      };
+
+    return this.http.put<any>(`${this.apiUrl}/ElectricalUnitPassport/update${id}`, newUnitData, { observe: 'response' })
+      .pipe(
+        map(res => {
+          return res.status;
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return of(error.status);
+        })
+      );
+    }
 }

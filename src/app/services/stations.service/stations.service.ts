@@ -41,4 +41,35 @@ export class StationsService {
       );
   }
 
+  public deleteStation(id:number): Observable<number> {
+  return this.http.delete<any>(`${this.apiUrl}/ElectricityPowerStation/delete/${id}`, { observe: 'response' })
+      .pipe(
+        map(res => {
+          return res.status;
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return of(error.status);
+        })
+      );
+    }
+
+  public editStation(id:number, info: {name: string, unitType: string, launchDate:string, activeUnitsCount:number }): Observable<number> {
+    const newStationData = {
+      name: info.name,
+      unitType: info.unitType,
+      launchDate:info.launchDate,
+      activeUnitsCount:info.activeUnitsCount
+      };
+
+    return this.http.put<any>(`${this.apiUrl}/ElectricityPowerStation/update${id}`, newStationData, { observe: 'response' })
+      .pipe(
+        map(res => {
+          return res.status;
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return of(error.status);
+        })
+      );
+  }
+
 }

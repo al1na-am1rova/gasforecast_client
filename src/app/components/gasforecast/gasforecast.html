@@ -1,115 +1,155 @@
 <div class="container">
-  <div class="sidebar">
-    <div class="sidebar-header">
-      <div class="header-tabs">
-        <div class="tab" [class.active]="activeTab === 'stations'" (click)="switchTab('stations')">
-          Электростанции
-        </div>
-        <div class="tab" [class.active]="activeTab === 'units'" (click)="switchTab('units')">
-          Электроагрегаты
-        </div>
-      </div>
-    </div>
-    
-    <!-- Контент станций -->
-    <div class="tab-content" *ngIf="activeTab === 'stations'">
-      <div class="components-tree">
-        <ul class="tree">
-          <li *ngFor="let station of stations" class="tree-item">
-            <div class="tree-node"  
-                 [class.selected]="selectedStation?.id === station.id"
-                 (click)="selectStation(station)">
-              <span class="component-name" [title]="station.name">{{station.name}}</span>
-            </div>
-          </li>
-          <button type="button" class="add-button" (click)="openAddStationForm()" *ngIf="userRole==='admin'">
-            + Добавить ЭСН
-          </button>
-        </ul>
-      </div>
+  <!-- Верхняя панель с кнопкой -->
+  <div class="top-panel">
+    <!-- Левая панель -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <div class = "header-tabs">Электростанции</div>
+      </div>      
     </div>
 
-    <!-- Контент электроагрегатов -->
-    <div class="tab-content" *ngIf="activeTab === 'units'">
-      <div class="components-tree">
-        <ul class="tree">
-          <li *ngFor="let unit of units" class="tree-item">
-            <div class="tree-node"
-                 [class.selected]="selectedUnit?.id === unit.id"
-                 (click)="selectUnit(unit)">
-              <span class="component-name" [title]="unit.unitType">{{unit.unitType}}</span>
-            </div>
-          </li>
-          <button type="button" class="add-button" (click)="openAddUnitForm()" *ngIf="userRole==='admin'">
-            + Добавить агрегат
-          </button>
-        </ul>
-      </div>
-    </div>
+    <!-- Кнопка таблицы агрегатов - ОТДЕЛЬНО от левой панели -->
+    <button class="table-view-button-top" [class.active]="showUnitsTable === true" (click)="openUnitsTable()" title="Открыть таблицу агрегатов">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="3" y1="9" x2="21" y2="9"></line>
+        <line x1="3" y1="15" x2="21" y2="15"></line>
+        <line x1="9" y1="3" x2="9" y2="21"></line>
+        <line x1="15" y1="3" x2="15" y2="21"></line>
+      </svg>
+      <span>Электроагрегаты</span>
+    </button>
   </div>
 
-  <!-- Основное содержимое (будет посередине) -->
-  <div class="main-content" [class.collapsed]="isPanelCollapsed">
-  </div>
-
-  <!-- Сворачиваемая правая панель -->
-  <div class="content-panel" *ngIf="selectedStation || selectedUnit" [class.collapsed]="isPanelCollapsed">
-    <!-- Кнопка сворачивания -->
-    <div class="panel-toggle" (click)="togglePanel()">
-      <span class="toggle-icon" [class.collapsed]="isPanelCollapsed">i</span>
+  <!-- Основное содержимое -->
+  <div class="main-content-wrapper">
+    <!-- Левая панель контента -->
+    <div class="sidebar-content">
+      <!-- Контент вкладок -->
+      <div class="tab-content">
+        <div class="components-tree">
+          <ul class="tree">
+            <li *ngFor="let station of stations" class="tree-item">
+              <div class="tree-node"  
+                   [class.selected]="selectedStation?.id === station.id"
+                   (click)="selectStation(station); closeUnitsTable();">
+                <span class="component-name" [title]="station.name">{{station.name}}</span>
+                <div class="tree-node-actions">
+                  <button *ngIf="userRole==='admin'" 
+                          (click)="$event.stopPropagation(); deleteStation(station.id)"
+                          class="delete-icon"
+                          title="Удалить станцию">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14Z"/>
+                    </svg>
+                  </button>
+                  <button *ngIf="userRole==='admin'" 
+                          (click)="$event.stopPropagation(); editStation(station)"
+                          class="edit-icon"
+                          title="Редактировать станцию">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </li>
+            <button type="button" class="add-button" (click)="openAddStationForm()" *ngIf="userRole==='admin'">
+              + Добавить ЭСН
+            </button>
+          </ul>
+        </div>
+      </div>
     </div>
 
-    <!-- Содержимое панели -->
-    <div class="panel-content" *ngIf="!isPanelCollapsed">
-      <!-- Информация для электростанций -->
-      <div *ngIf="activeTab === 'stations' && selectedStation" class="details-container">
-        <div class="details-header">
-          <h2>{{selectedStation.name}}</h2>
-        </div>
-        
-        <div class="info-section">
-          <h3>Основные характеристики</h3>
-          <div class="properties-list compact">
-            <div class="property-item">
-              <span class="property-label">Количество агрегатов:</span>
-              <span class="property-value">{{selectedStation.activeUnitsCount}}</span>
-            </div>
-            <div class="property-item">
-              <span class="property-label">Тип агрегатов:</span>
-              <span class="property-value">{{selectedStation.unitType}}</span>
-            </div>
-            <div class="property-item">
-              <span class="property-label">Дата запуска:</span>
-              <span class="property-value">{{selectedStation.launchDate | date:'dd.MM.yyyy'}}</span>
-            </div>
+    <!-- Основное содержимое -->
+    <div class="main-content" [class.collapsed]="isPanelCollapsed">
+      <!-- Таблица агрегатов -->
+      <div *ngIf="showUnitsTable" class="units-table-container">   
+        <div class="table-wrapper">
+          <div class="table-scroll-container">
+            <table class="units-table">
+              <thead>
+                <tr>
+                  <th>Тип агрегата</th>
+                  <th>Тип двигателя</th>
+                  <th>Ном. мощность (МВт)</th>
+                  <th>Станд. мощность (МВт)</th>
+                  <th>Расход газа (м³/ч)</th>
+                  <th *ngIf="userRole==='admin'">Действия</th>
+                  <th>
+                    <button type="button" class="btn-close" (click)="closeUnitsTable()" title="Закрыть таблицу">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                      </svg>
+                    </button>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let unit of units">
+                  <td>{{unit.unitType}}</td>
+                  <td>{{unit.engineType}}</td>
+                  <td>{{unit.ratedPower}}</td>
+                  <td>{{unit.standartPower}}</td>
+                  <td>{{unit.consumptionNorm}}</td>
+                  <td *ngIf="userRole==='admin'" class="actions-cell">
+                    <button (click)="editUnit(unit)"
+                            class="edit-icon"
+                            title="Редактировать агрегат">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                      </svg>
+                    </button>
+                    <button (click)="deleteUnit(unit.id)"
+                            class="delete-icon"
+                            title="Удалить агрегат">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14Z"/>
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
 
-      <!-- Информация для электроагрегатов -->
-      <div *ngIf="activeTab === 'units' && selectedUnit" class="details-container">
-        <div class="details-header">
-          <h2>{{selectedUnit.unitType}}</h2>
+      <!-- Сворачиваемая правая панель -->
+      <div class="content-panel" *ngIf="selectedStation" [class.collapsed]="isPanelCollapsed">
+        <!-- Кнопка сворачивания -->
+        <div class="panel-toggle" (click)="togglePanel()">
+          <span class="toggle-icon" [class.collapsed]="isPanelCollapsed">i</span>
         </div>
-        
-        <div class="info-section">
-          <h3>Технические характеристики</h3>
-          <div class="properties-list compact">
-            <div class="property-item">
-              <span class="property-label">Тип двигателя:</span>
-              <span class="property-value">{{selectedUnit.engineType}}</span>
+
+        <!-- Содержимое панели -->
+        <div class="panel-content" *ngIf="!isPanelCollapsed">
+          <!-- Информация для электростанций -->
+          <div *ngIf="selectedStation" class="details-container">
+            <div class="details-header">
+              <h2>{{selectedStation.name}}</h2>
             </div>
-            <div class="property-item">
-              <span class="property-label">Ном. мощность:</span>
-              <span class="property-value">{{selectedUnit.ratedPower}} МВт</span>
-            </div>
-            <div class="property-item">
-              <span class="property-label">Станд. мощность:</span>
-              <span class="property-value">{{selectedUnit.standartPower}} МВт</span>
-            </div>
-            <div class="property-item">
-              <span class="property-label">Расход газа:</span>
-              <span class="property-value">{{selectedUnit.consumptionNorm}} м³/ч</span>
+            
+            <div class="info-section">
+              <h3>Основные характеристики</h3>
+              <div class="properties-list compact">
+                <div class="property-item">
+                  <span class="property-label">Количество агрегатов:</span>
+                  <span class="property-value">{{selectedStation.activeUnitsCount}}</span>
+                </div>
+                <div class="property-item">
+                  <span class="property-label">Тип агрегатов:</span>
+                  <span class="property-value">{{selectedStation.unitType}}</span>
+                </div>
+                <div class="property-item">
+                  <span class="property-label">Дата запуска:</span>
+                  <span class="property-value">{{selectedStation.launchDate | date:'dd.MM.yyyy'}}</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -118,7 +158,7 @@
   </div>
 </div>
 
-<!-- Модальное окно для добавления станции -->
+<!-- Модальные окна -->
 <div class="modal-overlay" *ngIf="showAddStationForm" (click)="closeAddStationForm()">
   <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
@@ -176,7 +216,7 @@
           Добавить станцию
         </button>
         <div *ngIf="stMsg" class="message" [class.error]="stMsg !== 'Success'">
-        {{stMsg}}
+          {{stMsg}}
         </div>
       </div>
     </form>
@@ -257,7 +297,7 @@
           Добавить агрегат
         </button>
         <div *ngIf="uMsg" class="message" [class.error]="uMsg !== 'Success'">
-        {{uMsg}}
+          {{uMsg}}
         </div>
       </div>
     </form>

@@ -81,6 +81,19 @@ ngOnUpdate() {
   units: Unit[] = [];
   userRole: string|null = null;
 
+   showUnitsTable = false;
+
+  // Методы для управления таблицей
+  openUnitsTable() {
+    this.showUnitsTable = true;
+    this.selectedStation = null;
+    this.selectedUnit = null;
+  }
+
+  closeUnitsTable() {
+    this.showUnitsTable = false;
+  }
+
   showAddStationForm = false;
   newStation = {
     name: '',
@@ -132,6 +145,7 @@ ngOnUpdate() {
       this.stMsg = "Connection error. Please try again.";
     }
   });
+    this.stMsg = '';
   }
 
    public loadUnits()  {
@@ -147,6 +161,7 @@ ngOnUpdate() {
       this.uMsg = "Connection error. Please try again.";
     }
   });
+    this.uMsg = '';
   }
 
   //методы для формы агрегата
@@ -188,7 +203,11 @@ ngOnUpdate() {
           this.uMsg = "Success";
           this.closeAddUnitForm();
           this.loadUnits();
-        } else {
+        } 
+        else if (status == 401) {
+        this.router.navigate(['/login']);
+        }
+        else {
           this.uMsg = `Something went wrong (${status})`;
         }
       },
@@ -234,7 +253,11 @@ ngOnUpdate() {
           this.stMsg = "Success";
           this.closeAddStationForm();
           this.loadStations();
-        } else {
+        } 
+        else if (status == 401) {
+        this.router.navigate(['/login']);
+        }
+        else {
           this.stMsg = `Something went wrong (${status})`;
         }
       },
@@ -242,5 +265,55 @@ ngOnUpdate() {
         this.stMsg = "Connection error. Please try again.";
       }
     });
-}
+  }
+
+  public deleteUnit(id:number){
+    this._units.deleteUnit(id).subscribe({
+      next: (status) => {
+        if (status === 200) {
+          this.uMsg = "Success";
+          this.loadUnits();
+          this.selectedUnit = null;
+        } 
+        else if (status == 401) {
+        this.router.navigate(['/login']);
+        }
+        else {
+          this.uMsg = `Something went wrong (${status})`;
+        }
+      },
+      error: (error) => {
+        this.uMsg = "Connection error. Please try again.";
+      }
+    });
+  }
+
+   public deleteStation(id:number){
+    this._stations.deleteStation(id).subscribe({
+      next: (status) => {
+        if (status === 200) {
+          this.stMsg = "Success";
+          this.loadStations();
+          this.selectedStation = null;
+        } 
+        else if (status == 401) {
+        this.router.navigate(['/login']);
+        }
+        else {
+          this.stMsg = `Something went wrong (${status})`;
+        }
+      },
+      error: (error) => {
+        this.stMsg = "Connection error. Please try again.";
+      }
+    });
+  }
+
+  public editStation(st:Station){
+
+  }
+
+  public editUnit(u:Unit){
+
+  }
 }

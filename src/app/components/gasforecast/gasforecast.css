@@ -1,12 +1,96 @@
 .container {
   display: flex;
+  flex-direction: column;
   height: 100vh;
   background-color: #ffffff;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Левая панель */
-.sidebar {
+/* ===== ВЕРХНЯЯ ПАНЕЛЬ ===== */
+.top-panel {
+  display: flex;
+  align-items: stretch;
+  background: #ffffff;
+  border-bottom: 1px solid #e1e5e9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  height: 57px;
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+/* Заголовок с вкладками */
+.sidebar-header {
+  width: 280px;
+  background: #f8fbff;
+  flex-shrink: 0;
+  height: 57px;
+}
+
+.header-tabs {
+  display: flex;
+  align-items: center;
+  padding: 0 15px;
+  background: #ffffff;
+  border: none;
+  border-left: 1px solid #e1e5e9;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: #5f6368;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  height: 100%;
+}
+
+/* Кнопка таблицы в верхней панели */
+.table-view-button-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 20px;
+  background: #ffffff;
+  border: none;
+  border-left: 1px solid #e1e5e9;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: #5f6368;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  height: 100%;
+}
+
+.table-view-button-top:hover {
+  background: #f8fbff;
+  color: #2980b9;
+}
+
+.table-view-button-top.active {
+  color: #2980b9;
+  border-bottom: 2px solid #2980b9;
+  background: #ffffff;
+}
+
+
+.table-view-button-top svg {
+  color: #5f6368;
+  transition: color 0.3s ease;
+}
+
+.table-view-button-top:hover svg {
+  color: #2980b9;
+}
+
+/* ===== ОСНОВНОЙ КОНТЕНТ ===== */
+.main-content-wrapper {
+  display: flex;
+  flex: 1;
+  overflow: hidden; 
+  height: 100%;
+}
+
+/* Левая панель контента */
+.sidebar-content {
   width: 280px;
   background: #ffffff;
   border-right: 1px solid #e1e5e9;
@@ -18,57 +102,27 @@
   z-index: 10;
 }
 
-.sidebar-header {
-  padding: 0;
-  border-bottom: 1px solid #e1e5e9;
-  background: #f8fbff;
-  flex-shrink: 0;
-}
-
-.header-tabs {
-  display: flex;
-  width: 100%;
-}
-
-.tab {
-  flex: 1;
-  padding: 14px 16px;
-  text-align: center;
-  font-size: 13px;
-  font-weight: 600;
-  color: #5f6368;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border-bottom: 2px solid transparent;
-  background: #f8fbff;
-}
-
-.tab:hover {
-  background: #e8f4fd;
-  color: #2980b9;
-}
-
-.tab.active {
-  color: #2980b9;
-  border-bottom: 2px solid #2980b9;
-  background: #ffffff;
-}
-
 /* Контент вкладок */
 .tab-content {
   flex: 1;
-  overflow-y: auto;
+  overflow: hidden; 
+  display: flex;
+  flex-direction: column;
 }
 
 .components-tree {
   padding: 0;
   height: 100%;
+  overflow-y: auto; 
+  display: flex;
+  flex-direction: column; 
 }
 
 .tree {
   list-style: none;
   padding: 0;
   margin: 0;
+  flex: 1; 
 }
 
 .tree-item {
@@ -78,6 +132,7 @@
 .tree-node {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 12px 16px;
   background: #ffffff;
   border-bottom: 1px solid #f1f3f4;
@@ -97,28 +152,52 @@
   border-left: 3px solid #2980b9;
 }
 
-.tree-node::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  background: #2980b9;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.tree-node:hover::after {
-  opacity: 1;
-}
-
 .component-name {
   font-weight: 500;
   color: #2c3e50;
   flex: 1;
   font-size: 13px;
   letter-spacing: 0.1px;
+}
+
+/* Иконки действий */
+.tree-node-actions {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+
+.edit-icon, .delete-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 3px;
+  transition: all 0.2s ease;
+  opacity: 0.6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+}
+
+.edit-icon:hover, .delete-icon:hover {
+  background: #f8f9fa;
+  opacity: 1;
+  border: 1px solid #e9ecef;
+}
+
+.edit-icon svg, .delete-icon svg {
+  color: #6c757d;
+}
+
+.edit-icon:hover svg {
+  color: #007bff;
+}
+
+.delete-icon:hover svg {
+  color: #dc3545;
 }
 
 /* Кнопка добавления */
@@ -136,6 +215,7 @@
   transition: all 0.3s ease;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  flex-shrink: 0;
 }
 
 .add-button:hover {
@@ -143,68 +223,236 @@
   transform: translateY(-1px);
   box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
 }
+/* Стили для скроллбара левой панели */
+.sidebar-content::-webkit-scrollbar {
+  width: 6px;
+}
 
-/* Основное содержимое посередине */
+.sidebar-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.components-tree::-webkit-scrollbar {
+  width: 6px;
+}
+
+.components-tree::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.components-tree::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.components-tree::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* ===== ОСНОВНОЕ СОДЕРЖИМОЕ ===== */
 .main-content {
   flex: 1;
   background: #f8f9fa;
   transition: all 0.3s ease;
-  overflow-y: auto;
+  overflow: auto;
+  position: relative;
 }
 
 .main-content.collapsed {
   margin-right: 0;
 }
 
-.main-placeholder {
+/* Таблица агрегатов */
+.units-table-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #f8f9fa;
+  margin-left:0px;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%;
-  padding: 40px;
+  margin: auto
 }
 
-.placeholder-content {
-  text-align: center;
-  max-width: 500px;
+.btn-close:hover {
+  background: #f8f9fa;
 }
 
-.placeholder-icon {
-  font-size: 64px;
-  margin-bottom: 20px;
-  opacity: 0.7;
+.btn-close svg {
+  color: #6c757d;
 }
 
-.placeholder-content h3 {
+.btn-close:hover svg {
+  color: #dc3545;
+}
+
+.table-wrapper {
+  flex: 1;
+  background: white;
+  border-radius: 0px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  border: 1px solid #e1e5e9;
+  display: flex;
+  flex-direction: column;
+  max-width:100%;
+}
+
+/* Контейнер для скролла таблицы */
+.table-scroll-container {
+  flex: 1;
+  overflow: auto;
+  position: relative;
+}
+
+/* Стили для скроллбара */
+.table-scroll-container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.table-scroll-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.table-scroll-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.table-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.units-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 600px;
+}
+
+.units-table th {
+  background: #f8f9fa;
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
   color: #2c3e50;
-  margin-bottom: 15px;
-  font-size: 24px;
+  border-bottom: 2px solid #e1e5e9;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
-.placeholder-content p {
+.units-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e1e5e9;
   color: #5f6368;
-  line-height: 1.5;
 }
 
-.main-details {
+.units-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.actions-cell {
+  display: flex;
+  align-items: left;
+  justify-content: left;
+}
+
+.edit-icon,
+.delete-icon {
+  width: 32px;
+  height: 32px;
+  padding: 6px;
+}
+
+.empty-state {
   padding: 40px;
+  text-align: center;
+  color: #6c757d;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.main-details h2 {
-  color: #2c3e50;
-  margin-bottom: 20px;
+.empty-state p {
+  margin: 0;
+  font-size: 16px;
+}
+
+/* Фиксированные колонки для лучшего UX */
+.units-table th:nth-child(1),
+.units-table td:nth-child(1) {
+  position: sticky;
+  left: 0;
+  background: white;
+  z-index: 5;
+  min-width: 150px;
+}
+
+.units-table th:nth-child(1) {
+  background: #f8f9fa;
+  z-index: 15;
+}
+
+.units-table tbody tr:hover td:nth-child(1) {
+  background: #f8f9fa;
+}
+
+.units-table th:last-child,
+.units-table td:last-child {
+  position: sticky;
+  right: 0;
+  background: white;
+  z-index: 5;
+}
+
+.units-table th:last-child {
+  background: #f8f9fa;
+  z-index: 15;
+}
+
+.units-table tbody tr:hover td:last-child {
+  background: #f8f9fa;
 }
 
 /* Сворачиваемая правая панель */
 .content-panel {
   width: 300px;
+  height: 400px;
   background: #ffffff;
   border-left: 1px solid #e1e5e9;
   box-shadow: -1px 0 5px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
   display: flex;
-  position: relative;
   z-index: 5;
+  position:absolute;
+  right: 0;
+  top: 5px;
+  transform: translateX(0);
 }
 
 .content-panel.collapsed {
@@ -280,7 +528,6 @@
   padding-left: 10px;
 }
 
-/* Компактный список свойств */
 .properties-list {
   display: flex;
   flex-direction: column;
@@ -293,16 +540,6 @@
 .properties-list.compact .property-item {
   padding: 10px 14px;
   min-height: 40px;
-}
-
-.properties-list.compact .property-label {
-  font-size: 12px;
-  min-width: 140px;
-}
-
-.properties-list.compact .property-value {
-  font-size: 12px;
-  max-width: 120px;
 }
 
 .property-item {
@@ -340,7 +577,7 @@
   max-width: 120px;
 }
 
-/* Стили для модального окна */
+/* ===== МОДАЛЬНЫЕ ОКНА ===== */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -376,6 +613,8 @@
 .modal-header h3 {
   margin: 0;
   color: #333;
+  font-size: 20px;
+  font-weight: 600;
 }
 
 .close-button {
@@ -384,10 +623,14 @@
   font-size: 24px;
   cursor: pointer;
   color: #666;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
 }
 
 .close-button:hover {
   color: #333;
+  background: #f8f9fa;
 }
 
 .add-station-form {
@@ -403,6 +646,7 @@
   margin-bottom: 5px;
   font-weight: 500;
   color: #333;
+  font-size: 14px;
 }
 
 .form-group input,
@@ -413,12 +657,14 @@
   border-radius: 4px;
   font-size: 14px;
   box-sizing: border-box;
+  transition: border-color 0.2s ease;
 }
 
 .form-group input:focus,
 .form-group select:focus {
   outline: none;
-  border-color: #007bff;
+  border-color: #2980b9;
+  box-shadow: 0 0 0 2px rgba(41, 128, 185, 0.1);
 }
 
 .form-actions {
@@ -426,6 +672,8 @@
   justify-content: flex-end;
   gap: 10px;
   margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
 }
 
 .btn-cancel {
@@ -435,46 +683,69 @@
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
+  color: #666;
+  transition: all 0.2s ease;
+}
+
+.btn-cancel:hover {
+  background: #f8f9fa;
+  border-color: #999;
 }
 
 .btn-submit {
   padding: 10px 20px;
   border: none;
-  background: #007bff;
+  background: #2980b9;
   color: white;
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-submit:hover:not(:disabled) {
+  background: #2573a7;
+  transform: translateY(-1px);
 }
 
 .btn-submit:disabled {
   background: #ccc;
   cursor: not-allowed;
+  transform: none;
 }
 
-/* Адаптивность */
-@media (max-width: 1024px) {
-  .content-panel {
-    width: 350px;
+/* ===== АДАПТИВНОСТЬ ===== */
+@media (max-width: 768px) {
+  .top-panel {
+    flex-direction: column;
+    height: auto;
   }
   
-  .content-panel.collapsed {
-    width: 40px;
+  .sidebar-header {
+    width: 100%;
+    border-right: none;
   }
-}
-
-@media (max-width: 768px) {
-  .container {
+  
+  .table-view-button-top {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid #e1e5e9;
+    justify-content: center;
+    padding: 12px 20px;
+  }
+  
+  .main-content-wrapper {
     flex-direction: column;
   }
   
-  .sidebar {
+  .sidebar-content {
     width: 100%;
     height: 250px;
   }
   
   .main-content {
-    height: calc(100vh - 250px - 60px);
+    height: calc(100vh - 250px - 114px);
   }
   
   .content-panel {
@@ -498,12 +769,6 @@
     border-radius: 0 0 8px 8px;
   }
   
-  .panel-toggle:hover {
-    width: 64px;
-    top: -22px;
-    left: calc(50% - 2px);
-  }
-  
   .toggle-icon {
     transform: rotate(90deg);
   }
@@ -512,7 +777,6 @@
     transform: rotate(-90deg);
   }
 
-  /* Адаптивные стили для модального окна на мобильных */
   .modal-content {
     width: 95%;
     margin: 20px;
@@ -524,5 +788,9 @@
   
   .btn-cancel, .btn-submit {
     width: 100%;
+  }
+  
+  .units-table-container {
+    padding: 15px;
   }
 }
