@@ -10,24 +10,48 @@ import { FormsModule } from '@angular/forms';
   selector: 'app-gasforecast',
   templateUrl: './gasforecast.html',
   styleUrls: ['./gasforecast.css'],
-  imports: [CommonModule, FormsModule],
+   imports: [
+    CommonModule, 
+    FormsModule
+  ],
   standalone: true
 })
-export class Gasforecast{
+export class Gasforecast {
 
 constructor(private router: Router , private _stations: StationsService, private _units: UnitsService){}
 
-ngOnInit() {
-  this.loadStations();
-  this.loadUnits();
-  this.userRole = localStorage.getItem('userRole') || null;
-}
+  ngOnInit() {
+    this.loadStations();
+    this.loadUnits();
+    this.userRole = localStorage.getItem('userRole') || null;
+    this.filteredStations = [...this.stations];
+  }
 
 ngOnUpdate() {
   this.loadStations();
   this.loadUnits();
 }
 
+ngOnChanges() {
+  this.filterStations();
+}
+
+
+ filterStations() {
+    if (!this.searchTerm) {
+      this.filteredStations = [...this.stations];
+    } else {
+      const term = this.searchTerm.toLowerCase();
+      this.filteredStations = this.stations.filter(station =>
+        station.name.toLowerCase().includes(term)
+      );
+    }
+  }
+
+  clearSearch() {
+    this.searchTerm = '';
+    this.filteredStations = [...this.stations];
+  }
   /*stations: Station[] = [
     {
       id: 1,
@@ -85,6 +109,8 @@ ngOnUpdate() {
   selectedStationId: number = 0;
   isStationEditing: boolean = false;
   editingUnit:Unit|null = null;
+  searchTerm: string = '';
+  filteredStations: any[] = [];
 
   // Методы для управления таблицей
   openUnitsTable() {

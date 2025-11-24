@@ -29,11 +29,24 @@
   <div class="main-content-wrapper">
     <!-- Левая панель контента -->
     <div class="sidebar-content">
+      <div class="search-container">
+      <input type="text" 
+             [(ngModel)]="searchTerm"
+             (input)="filterStations()"
+             placeholder="Поиск станций..."
+             class="search-input">
+      <button *ngIf="searchTerm" 
+              (click)="clearSearch()"
+              class="clear-search-btn"
+              title="Очистить поиск">
+        ×
+      </button>
+    </div>
       <!-- Контент вкладок -->
       <div class="tab-content">
         <div class="components-tree">
           <ul class="tree">
-            <li *ngFor="let station of stations" class="tree-item">
+            <li *ngFor="let station of filteredStations" class="tree-item">
               <div class="tree-node"  
                    [class.selected]="selectedStation?.id === station.id"
                    (click)="selectStation(station); closeUnitsTable();">
@@ -71,11 +84,6 @@
       <div *ngIf="showUnitsTable" class="units-table-container">   
         <div class="table-wrapper">
           <div class="table-scroll-container">
-            <div class="add-unit-button-container" *ngIf="userRole==='admin'">
-            <button type="button" class="add-button" (click)="openAddUnitForm()">
-              + Добавить электроагрегат
-            </button>
-          </div>
             <table class="units-table">
               <thead>
                 <tr>
