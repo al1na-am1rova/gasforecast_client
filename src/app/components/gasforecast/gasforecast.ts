@@ -19,39 +19,89 @@ import { FormsModule } from '@angular/forms';
 export class Gasforecast {
 
 constructor(private router: Router , private _stations: StationsService, private _units: UnitsService){}
+    selectedStation: Station | null = null;
+  selectedUnit: Unit | null = null;
+  isPanelCollapsed = false;
+  stMsg: string = '';
+  uMsg: string = '';
+  stations: Station[] = [];
+  units: Unit[] = [];
+  userRole: string|null = null;
+  showUnitsTable = false;
+  showAddStationForm = false;
+  showAddUnitForm = false;
+  selectedStationId: number = 0;
+  isStationEditing: boolean = false;
+  editingUnit:Unit|null = null;
+  searchTermStations: string = '';
+  filteredStations: any[] = [];
+  searchTermUnits: string = '';
+  filteredUnits: any[] = [];
+  sortColumnUnits: string = '';
+  sortDirectionUnits: 'asc' | 'desc' = 'asc';
 
   ngOnInit() {
     this.loadStations();
     this.loadUnits();
     this.userRole = localStorage.getItem('userRole') || null;
-    this.filteredStations = [...this.stations];
   }
 
-ngOnUpdate() {
-  this.loadStations();
-  this.loadUnits();
-}
-
-ngOnChanges() {
-  this.filterStations();
-}
-
-
- filterStations() {
-    if (!this.searchTerm) {
+  filterStations() {
+    if (!this.searchTermStations) {
       this.filteredStations = [...this.stations];
     } else {
-      const term = this.searchTerm.toLowerCase();
+      const term = this.searchTermStations.toLowerCase();
       this.filteredStations = this.stations.filter(station =>
         station.name.toLowerCase().includes(term)
       );
     }
   }
 
-  clearSearch() {
-    this.searchTerm = '';
+  clearSearchStations() {
+    this.searchTermStations= '';
     this.filteredStations = [...this.stations];
   }
+
+   filterUnits() {
+    if (!this.searchTermUnits) {
+      this.filteredUnits = [...this.units];
+    } else {
+      const term = this.searchTermUnits.toLowerCase();
+      this.filteredUnits = this.units.filter(unit =>
+        unit.unitType.toLowerCase().includes(term)
+      );
+    }
+  }
+
+  getSortArrow(column: string): string {
+  if (this.sortColumnUnits !== column) return '↕';   // нет активной сортировки
+  return this.sortDirectionUnits === 'asc' ? '▲' : '▼';
+}
+
+
+  clearSearchUnits() {
+    this.searchTermUnits= '';
+    this.filteredUnits = [...this.units];
+  }
+
+  sortUnits(column: string) {
+  if (this.sortColumnUnits === column) {
+    this.sortDirectionUnits = this.sortDirectionUnits === 'asc' ? 'desc' : 'asc';
+  } else {
+    this.sortColumnUnits = column;
+    this.sortDirectionUnits = 'asc';
+  }
+
+  this.filteredUnits.sort((a, b) => {
+    const valA = a[column];
+    const valB = b[column];
+
+    if (valA < valB) return this.sortDirectionUnits === 'asc' ? -1 : 1;
+    if (valA > valB) return this.sortDirectionUnits === 'asc' ? 1 : -1;
+    return 0;
+  });
+}
+
   /*stations: Station[] = [
     {
       id: 1,
@@ -94,23 +144,6 @@ ngOnChanges() {
   consumptionNorm: 2,
   },
   ]*/
-
-  selectedStation: Station | null = null;
-  selectedUnit: Unit | null = null;
-  isPanelCollapsed = false;
-  stMsg: string = '';
-  uMsg: string = '';
-  stations: Station[] = [];
-  units: Unit[] = [];
-  userRole: string|null = null;
-  showUnitsTable = false;
-  showAddStationForm = false;
-  showAddUnitForm = false;
-  selectedStationId: number = 0;
-  isStationEditing: boolean = false;
-  editingUnit:Unit|null = null;
-  searchTerm: string = '';
-  filteredStations: any[] = [];
 
   // Методы для управления таблицей
   openUnitsTable() {
@@ -156,6 +189,7 @@ ngOnChanges() {
         this.stMsg = "Connection error. Please try again.";
       } else {
         this.stations = result;
+        this.filterStations();
       }
     },
     error: (error) => {
@@ -172,6 +206,7 @@ ngOnChanges() {
         this.uMsg = "Connection error. Please try again.";
       } else {
         this.units = result;
+        this.filterUnits();
       }
     },
     error: (error) => {

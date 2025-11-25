@@ -2,15 +2,16 @@
   display: flex;
   flex-direction: column;
   height: 87vh;
-  background-color: #ffffff;
+   background: #f8f9fa;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* ===== ВЕРХНЯЯ ПАНЕЛЬ ===== */
 .top-panel {
   display: flex;
+  gap: 5px;
   align-items: stretch;
-  background: #ffffff;
+ background: #f8f9fa;
   border-bottom: 1px solid #e1e5e9;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
   height: 57px;
@@ -24,9 +25,11 @@
   background: #f8fbff;
   flex-shrink: 0;
   height: 57px;
+  box-shadow: 1px 0 5px rgba(0, 0, 0, 0.08);
 }
 
 .header-tabs {
+  box-shadow: 1px 0 5px rgba(0, 0, 0, 0.08);
   display: flex;
   align-items: center;
   padding: 0 15px;
@@ -44,6 +47,7 @@
 
 /* Кнопка таблицы в верхней панели */
 .table-view-button-top {
+  box-shadow: 1px 0 5px rgba(0, 0, 0, 0.08);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -71,7 +75,6 @@
   background: #ffffff;
 }
 
-
 .table-view-button-top svg {
   color: #5f6368;
   transition: color 0.3s ease;
@@ -84,6 +87,7 @@
 /* ===== ОСНОВНОЙ КОНТЕНТ ===== */
 .main-content-wrapper {
   display: flex;
+  gap: 5px;
   flex: 1;
   overflow: hidden; 
   height: 100%;
@@ -114,12 +118,17 @@
   position: relative;
   margin-bottom: 5px;
   margin-top: 5px;
-  padding: 0 5px;
+  margin-left:auto;
+  margin-right:auto;
+  position: relative;
+  width: 95%;
 }
 
 .search-input {
-  width: 90%;
-  padding: 5px 5px 5px 10px;
+  margin: 0 auto;
+  position: relative;
+  width: 95%;
+  padding: 5px 5px 5px 5px;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 14px;
@@ -362,7 +371,6 @@
   display: flex;
   flex-direction: column;
   background: #f8f9fa;
-  margin-left:0px;
 }
 
 .btn-close {

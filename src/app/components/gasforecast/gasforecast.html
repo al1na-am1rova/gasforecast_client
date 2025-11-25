@@ -31,17 +31,17 @@
     <div class="sidebar-content">
       <div class="search-container">
       <input type="text" 
-             [(ngModel)]="searchTerm"
+             [(ngModel)]="searchTermStations"
              (input)="filterStations()"
              placeholder="Поиск станций..."
              class="search-input">
-      <button *ngIf="searchTerm" 
-              (click)="clearSearch()"
+      <button *ngIf="searchTermStations" 
+              (click)="clearSearchStations()"
               class="clear-search-btn"
               title="Очистить поиск">
         ×
       </button>
-    </div>
+      </div>
       <!-- Контент вкладок -->
       <div class="tab-content">
         <div class="components-tree">
@@ -83,15 +83,43 @@
       <!-- Таблица агрегатов -->
       <div *ngIf="showUnitsTable" class="units-table-container">   
         <div class="table-wrapper">
+          <div class="search-container">
+            <input type="text" 
+                  [(ngModel)]="searchTermUnits"
+                  (input)="filterUnits()"
+                  placeholder="Поиск электроагрегатов по названию..."
+                  class="search-input">
+            <button *ngIf="searchTermUnits" 
+                    (click)="clearSearchUnits()"
+                    class="clear-search-btn"
+                    title="Очистить поиск">
+              ×
+            </button>
+            </div>
           <div class="table-scroll-container">
             <table class="units-table">
               <thead>
                 <tr>
-                  <th>Тип агрегата</th>
-                  <th>Тип двигателя</th>
-                  <th>Ном. мощность (МВт)</th>
-                  <th>Станд. мощность (МВт)</th>
-                  <th>Расход газа (м³/ч)</th>
+                  <th (click)="sortUnits('unitType')">
+                    Тип агрегата {{ getSortArrow('unitType') }}
+                  </th>
+
+                  <th (click)="sortUnits('engineType')">
+                    Тип двигателя {{ getSortArrow('engineType') }}
+                  </th>
+
+                  <th (click)="sortUnits('ratedPower')">
+                    Ном. мощность (МВт) {{ getSortArrow('ratedPower') }}
+                  </th>
+
+                  <th (click)="sortUnits('standartPower')">
+                    Станд. мощность (МВт) {{ getSortArrow('standartPower') }}
+                  </th>
+
+                  <th (click)="sortUnits('consumptionNorm')">
+                    Расход газа (м³/ч) {{ getSortArrow('consumptionNorm') }}
+                  </th>
+
                   <th *ngIf="userRole==='admin'">Действия</th>
                   <th *ngIf="userRole==='admin'">
                     <button type="button" class="add-button" (click)="openAddUnitForm()">
@@ -109,7 +137,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let unit of units">
+                <tr *ngFor="let unit of filteredUnits">
                   <td>{{unit.unitType}}</td>
                   <td>{{unit.engineType}}</td>
                   <td>{{unit.ratedPower}}</td>
@@ -233,8 +261,8 @@
         <button type="button" class="btn-cancel" (click)="closeAddStationForm()">Отмена</button>
         <button type="button" class="btn-submit" 
                 [disabled]="!stationForm.form.valid"
-                (click)="isStationEditing ? editStation() : addUnit()">
-                {{ isStationEditing ? 'Сохранить изменения' : 'Добавить агрегат' }}
+                (click)="isStationEditing ? editStation() : addStation()">
+                {{ isStationEditing ? 'Сохранить изменения' : 'Добавить станцию' }}
         </button>
         <div *ngIf="stMsg" class="message" [class.error]="stMsg !== 'Success'">
           {{stMsg}}
