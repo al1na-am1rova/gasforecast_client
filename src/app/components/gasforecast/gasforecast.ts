@@ -19,7 +19,7 @@ import { FormsModule } from '@angular/forms';
 export class Gasforecast {
 
 constructor(private router: Router , private _stations: StationsService, private _units: UnitsService){}
-    selectedStation: Station | null = null;
+  selectedStation: Station | null = null;
   selectedUnit: Unit | null = null;
   isPanelCollapsed = false;
   stMsg: string = '';
@@ -39,6 +39,10 @@ constructor(private router: Router , private _stations: StationsService, private
   filteredUnits: any[] = [];
   sortColumnUnits: string = '';
   sortDirectionUnits: 'asc' | 'desc' = 'asc';
+  showDeleteConfirmation: boolean = false;
+  itemToDelete: any = null;
+  deleteCallback: Function | null = null;
+
 
   ngOnInit() {
     this.loadStations();
@@ -408,5 +412,27 @@ constructor(private router: Router , private _stations: StationsService, private
   else {
     this.uMsg = `Something went wrong`;
   }
+}
+
+// Открытие модального окна с передачей объекта и функции удаления
+openDeleteConfirmation(item: any, callback: Function) {
+  this.itemToDelete = item;
+  this.deleteCallback = callback;
+  this.showDeleteConfirmation = true;
+}
+
+// Закрыть окно
+closeDeleteConfirmation() {
+  this.showDeleteConfirmation = false;
+  this.itemToDelete = null;
+  this.deleteCallback = null;
+}
+
+// Подтверждение удаления
+confirmDelete() {
+  if (this.deleteCallback && this.itemToDelete) {
+    this.deleteCallback(this.itemToDelete.id);
+  }
+  this.closeDeleteConfirmation();
 }
 }
