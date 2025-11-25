@@ -1,17 +1,22 @@
 <div class="login-container">
-    <h3>Войдите в аккаунт</h3>
-    <div>
-        <div class="spacer">
-            <label for="email">Логин</label>
-            <input type="text" id="email" placeholder="Логин" [(ngModel)]="loginData.username">
-        </div>
-        <div class="spacer">
-            <label for="password">Пароль</label>
-            <input type="password" id="password" placeholder="Пароль" [(ngModel)]="loginData.password">
-        </div>
-        <div class="spacer">
-            <button type="submit" (click)="onLogin()">Вход</button>
-        </div>
-        <p>{{msg}}</p>
+  <h3>Войдите в аккаунт</h3>
+  <div>
+    <div class="spacer">
+      <label for="email">Логин</label>
+      <input type="text" id="email" placeholder="Логин" [(ngModel)]="loginData.username">
+      <p *ngIf="submitted && !loginData.username" style="color: red;">Поле не может быть пустым</p>
     </div>
+
+    <div class="spacer">
+      <label for="password">Пароль</label>
+      <input type="password" id="password" placeholder="Пароль" [(ngModel)]="loginData.password">
+      <p *ngIf="submitted && !loginData.password" style="color: red;">Поле не может быть пустым</p>
+    </div>
+
+    <div class="spacer">
+      <button type="submit" (click)="onLogin()">Вход</button>
+    </div>
+
+    <p>{{msg}}</p>
+  </div>
 </div>

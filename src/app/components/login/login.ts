@@ -1,28 +1,36 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth.service/auth.service';
-import {Router} from "@angular/router";
+import { Router } from "@angular/router";
 import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
   templateUrl: 'login.html',
   styleUrls: ['login.css'],
-  standalone:true,
-  imports: [FormsModule]
+  standalone: true,
+  imports: [CommonModule,FormsModule]
 })
 export class Login {
-  
   loginData = {
-  username: '',
-  password: ''
+    username: '',
+    password: ''
   };
-  
-  msg = ''; // для отображения сообщений
 
-  constructor(private router: Router , private auth: AuthService){}
+  msg = ''; // для отображения сообщений
+  submitted = false; // флаг нажатия кнопки
+
+  constructor(private router: Router, private auth: AuthService) {}
 
   public onLogin() {
-    this.msg = 'Loading...'; // сообщение о загрузке
+    this.submitted = true;
+
+    if (!this.loginData.username || !this.loginData.password) {
+      this.msg = 'Пожалуйста, заполните все поля';
+      return;
+    }
+
+    this.msg = 'Loading...';
 
     this.auth.login({ ...this.loginData }).subscribe({
       next: (status) => {

@@ -190,14 +190,14 @@ constructor(private router: Router , private _stations: StationsService, private
   this._stations.getStations.subscribe({
     next: (result) => {
       if (typeof result === 'number') {
-        this.stMsg = "Connection error. Please try again.";
+        this.stMsg = "Ошибка. Попробуйте ещё раз.";
       } else {
         this.stations = result;
         this.filterStations();
       }
     },
     error: (error) => {
-      this.stMsg = "Connection error. Please try again.";
+      this.stMsg = "Ошибка. Попробуйте ещё раз.";
     }
   });
     this.stMsg = '';
@@ -207,14 +207,14 @@ constructor(private router: Router , private _stations: StationsService, private
     this._units.getUnits.subscribe({
     next: (result) => {
       if (typeof result === 'number') {
-        this.uMsg = "Connection error. Please try again.";
+        this.uMsg = "Ошибка. Попробуйте ещё раз.";
       } else {
         this.units = result;
         this.filterUnits();
       }
     },
     error: (error) => {
-      this.uMsg = "Connection error. Please try again.";
+      this.uMsg = "Ошибка. Попробуйте ещё раз.";
     }
   });
     this.uMsg = '';
@@ -265,11 +265,11 @@ constructor(private router: Router , private _stations: StationsService, private
         this.router.navigate(['/login']);
         }
         else {
-          this.uMsg = `Something went wrong (${status})`;
+          this.uMsg = `Что-то пошло не так. Код ошибки (${status})`;
         }
       },
       error: (error) => {
-        this.uMsg = "Connection error. Please try again.";
+        this.uMsg = "Ошибка. Попробуйте ещё раз.";
       }
     });
 }
@@ -308,7 +308,7 @@ constructor(private router: Router , private _stations: StationsService, private
     this._stations.addStation({ ...this.newStation}).subscribe({
       next: (status) => {
         if (status === 201) {
-          this.stMsg = "Success";
+          this.stMsg = "Успешно";
           this.closeAddStationForm();
           this.loadStations();
         } 
@@ -316,11 +316,11 @@ constructor(private router: Router , private _stations: StationsService, private
         this.router.navigate(['/login']);
         }
         else {
-          this.stMsg = `Something went wrong (${status})`;
+          this.stMsg = `Что-то пошло не так. Код ошибки (${status})`;
         }
       },
       error: (error) => {
-        this.stMsg = "Connection error. Please try again.";
+        this.stMsg = "Ошибка. Попробуйте ещё раз.";
       }
     });
   }
@@ -329,7 +329,7 @@ constructor(private router: Router , private _stations: StationsService, private
     this._units.deleteUnit(id).subscribe({
       next: (status) => {
         if (status === 200) {
-          this.uMsg = "Success";
+          this.uMsg = "Успешно";
           this.loadUnits();
           this.selectedUnit = null;
         } 
@@ -337,11 +337,11 @@ constructor(private router: Router , private _stations: StationsService, private
         this.router.navigate(['/login']);
         }
         else {
-          this.uMsg = `Something went wrong (${status})`;
+          this.uMsg = `Что-то пошло не так. Код ошибки (${status})`;
         }
       },
       error: (error) => {
-        this.uMsg = "Connection error. Please try again.";
+        this.uMsg = "Ошибка. Попробуйте ещё раз.";
       }
     });
   }
@@ -350,7 +350,7 @@ constructor(private router: Router , private _stations: StationsService, private
     this._stations.deleteStation(id).subscribe({
       next: (status) => {
         if (status === 200) {
-          this.stMsg = "Success";
+          this.stMsg = "Успешно";
           this.loadStations();
           this.selectedStation = null;
         } 
@@ -358,11 +358,11 @@ constructor(private router: Router , private _stations: StationsService, private
         this.router.navigate(['/login']);
         }
         else {
-          this.stMsg = `Something went wrong (${status})`;
+          this.stMsg = `Что-то пошло не так. Код ошибки (${status})`;
         }
       },
       error: (error) => {
-        this.stMsg = "Connection error. Please try again.";
+        this.stMsg = "Ошибка. Попробуйте ещё раз.";
       }
     });
   }
@@ -371,7 +371,7 @@ constructor(private router: Router , private _stations: StationsService, private
     this._stations.editStation(this.selectedStationId, ({ ...this.newStation})).subscribe({
       next: (status) => {
         if (status === 200) {
-          this.stMsg = "Success";
+          this.stMsg = "Успешно";
           this.closeAddStationForm();
           this.loadStations(); 
         } 
@@ -379,11 +379,11 @@ constructor(private router: Router , private _stations: StationsService, private
         this.router.navigate(['/login']);
         }
         else {
-          this.stMsg = `Something went wrong (${status})`;
+          this.stMsg = `Что-то пошло не так. Код ошибки (${status})`;
         }
       },
       error: (error) => {
-        this.stMsg = "Connection error. Please try again.";
+        this.stMsg = "Ошибка. Попробуйте ещё раз.";
       }
     });
   }
@@ -393,7 +393,7 @@ constructor(private router: Router , private _stations: StationsService, private
   this._units.editUnit(this.editingUnit.id, { ...this.newUnit}).subscribe({
       next: (status) => {
         if (status === 200) {
-          this.uMsg = "Success";
+          this.uMsg = "Успешно";
           this.closeAddUnitForm();
           this.loadUnits();
         } 
@@ -401,16 +401,16 @@ constructor(private router: Router , private _stations: StationsService, private
         this.router.navigate(['/login']);
         }
         else {
-          this.uMsg = `Something went wrong (${status})`;
+          this.uMsg = `Что-то пошло не так. Код ошибки (${status})`;
         }
       },
       error: (error) => {
-        this.uMsg = "Connection error. Please try again.";
+        this.uMsg = "Ошибка. Попробуйте ещё раз.";
       }
     });
   }
   else {
-    this.uMsg = `Something went wrong`;
+    this.uMsg = `Что-то пошло не так`;
   }
 }
 
