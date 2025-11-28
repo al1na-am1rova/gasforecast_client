@@ -454,6 +454,7 @@
   position: sticky;
   top: 0;
   z-index: 10;
+  cursor: pointer;
 }
 
 .units-table td {
@@ -718,6 +719,13 @@
   flex-grow: 1
 }
 
+.error-message {
+  color: #e74c3c;
+  font-size: 12px;
+  margin-top: 4px;
+  min-height: 16px;
+}
+
 .close-button {
   background: none;
   border: none;
@@ -768,6 +776,16 @@
   box-shadow: 0 0 0 2px rgba(41, 128, 185, 0.1);
 }
 
+.form-group.ng-invalid.ng-touched {
+  border-color: #e74c3c;
+  background-color: #fff6f6;
+}
+
+.invalid-input {
+  border: 1px solid;
+  border-color: #e74c3c;
+  background-color: #fff6f6;
+}
 .form-actions {
   display: flex;
   justify-content: flex-end;

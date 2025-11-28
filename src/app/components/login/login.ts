@@ -30,22 +30,23 @@ export class Login {
       return;
     }
 
-    this.msg = 'Loading...';
+    this.msg = 'Загрузка...';
 
     this.auth.login({ ...this.loginData }).subscribe({
       next: (status) => {
         if (status === 200) {
-          this.msg = "Success";
-          this.router.navigate(['/gasforecast']);
+          this.msg = "Успешно";
+          this.router.navigate(['/stationsUnits']);
         } else if (status === 401) {
-          this.msg = "Wrong username/password";
+          this.msg = "Неправильный логин или пароль";
+        } else if (status === 0) {
+          this.msg = "Сервер не отвечает";
         } else {
-          this.msg = `Something went wrong (${status})`;
+          this.msg = `Что-то пошло не так. Код ошибки (${status})`;
         }
       },
       error: (error) => {
-        this.msg = "Connection error. Please try again.";
-        console.error('Login error:', error);
+        this.msg = "Ошибка. Попробуйте еще раз.";
       }
     });
   }

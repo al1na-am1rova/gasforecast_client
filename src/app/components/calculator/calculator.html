@@ -1,0 +1,136 @@
+<div class="calculation-wrapper">
+  
+  <!-- Левая колонка (форма) -->
+  <div class="calculation-container">
+    <div class="calculation-header">
+      <h2>Расчет потребления газа</h2>
+      <p class="calculation-description">
+        Заполните параметры для расчета потребления газа электростанцией
+      </p>
+    </div>
+
+    <form class="calculation-form" #calcForm="ngForm">
+
+      <div class="form-grid">
+
+        <!-- Температура -->
+        <div class="form-group">
+          <label class="form-label">
+            Температура наружного воздуха <span class="required-star">*</span>
+          </label>
+
+          <input
+            [(ngModel)]="calculationRequestData.outsideTemperature"
+            name="outsideTemperature"
+            #outsideTemperature="ngModel"
+            required
+            min="-30"
+            max="40"
+            type="number"
+            class="form-input"
+            placeholder="Введите температуру в °C"
+          >
+
+          <div class="error-message" *ngIf="outsideTemperature.invalid && outsideTemperature.touched">
+            <span *ngIf="outsideTemperature.errors?.['required']">Введите температуру.</span>
+            <span *ngIf="outsideTemperature.errors?.['min']">Минимум -30 °C.</span>
+            <span *ngIf="outsideTemperature.errors?.['max']">Максимум 40 °C.</span>
+          </div>
+        </div>
+
+        <!-- Время работы -->
+        <div class="form-group">
+          <label class="form-label">
+            Время работы <span class="required-star">*</span>
+          </label>
+
+          <input
+            [(ngModel)]="calculationRequestData.operatingHours"
+            name="operatingHours"
+            #operatingHours="ngModel"
+            required
+            min="0"
+            type="number"
+            class="form-input"
+            placeholder="Введите время работы в часах"
+          >
+
+          <div class="error-message" *ngIf="operatingHours.invalid && operatingHours.touched">
+            <span *ngIf="operatingHours.errors?.['required']">Введите время работы.</span>
+            <span *ngIf="operatingHours.errors?.['min']">Не может быть меньше 0.</span>
+          </div>
+        </div>
+
+        <!-- Мощность установки -->
+        <div class="form-group">
+          <label class="form-label">
+            Мощность установки <span class="required-star">*</span>
+          </label>
+
+          <input
+            [(ngModel)]="calculationRequestData.unitPowerPercentage"
+            name="unitPowerPercentage"
+            #unitPowerPercentage="ngModel"
+            required
+            min="20"
+            max="100"
+            type="number"
+            class="form-input"
+            placeholder="Введите процент мощности"
+          >
+
+          <div class="error-message" *ngIf="unitPowerPercentage.invalid && unitPowerPercentage.touched">
+            <span *ngIf="unitPowerPercentage.errors?.['required']">Введите мощность.</span>
+            <span *ngIf="unitPowerPercentage.errors?.['min']">Минимум 20%.</span>
+            <span *ngIf="unitPowerPercentage.errors?.['max']">Максимум 100%.</span>
+          </div>
+        </div>
+
+        <!-- Низшая теплота сгорания -->
+        <div class="form-group">
+          <label class="form-label">
+            Низшая теплота сгорания <span class="required-star">*</span>
+          </label>
+
+          <input
+            [(ngModel)]="calculationRequestData.lowerHeatingValue"
+            name="lowerHeatingValue"
+            #lowerHeatingValue="ngModel"
+            required
+            min="7000"
+            max="10000"
+            type="number"
+            class="form-input"
+            placeholder="Введите теплоту сгорания в кДж/м³"
+          >
+
+          <div class="error-message" *ngIf="lowerHeatingValue.invalid && lowerHeatingValue.touched">
+            <span *ngIf="lowerHeatingValue.errors?.['required']">Введите теплоту сгорания.</span>
+            <span *ngIf="lowerHeatingValue.errors?.['min']">Минимум 7000.</span>
+            <span *ngIf="lowerHeatingValue.errors?.['max']">Максимум 10000.</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="form-actions">
+        <button 
+          type="button" 
+          class="btn-calculate"
+          (click)="calculate()"
+          [disabled]="calcForm.invalid"
+        >
+          Рассчитать потребление
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Правая колонка -->
+  <div class="calculation-result" *ngIf="msg || isSuccessfull">
+    <h3>Результат расчёта</h3>
+    <p class="result-value"  *ngIf="msg" >{{ msg }}</p>
+    <p class="result-value"  *ngIf="isSuccessfull"> Расход газа <strong>{{ this.calculationResponseData.gasConsumption }} </strong> м³</p>
+    <p class="result-value" *ngIf="isSuccessfull">Время расчета <strong>{{this.calculationResponseData.calculationTime | date:'hh:mm dd.MM.yyyy'}}</strong></p>
+  </div>
+</div>

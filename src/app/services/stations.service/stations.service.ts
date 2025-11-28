@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-import {Station} from '../../components/gasforecast/gasforecastModels';
+import {Station} from '../../components/stationsUnits/stationsUnitsModels';
 
 
 @Injectable({

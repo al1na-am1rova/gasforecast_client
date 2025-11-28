@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-import {Unit} from '../../components/gasforecast/gasforecastModels';
+import {Unit} from '../../components/stationsUnits/stationsUnitsModels';
 
 @Injectable({
   providedIn: 'root',

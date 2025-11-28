@@ -21,7 +21,7 @@
         <line x1="9" y1="3" x2="9" y2="21"></line>
         <line x1="15" y1="3" x2="15" y2="21"></line>
       </svg>
-      <span>Электроагрегаты</span>
+      <span>Паспорта электроагрегатов</span>
     </button>
   </div>
 
@@ -88,7 +88,7 @@
             <input type="text" 
                   [(ngModel)]="searchTermUnits"
                   (input)="filterUnits()"
-                  placeholder="Поиск электроагрегатов по названию..."
+                  placeholder="Поиск паспорта по типу электроагрегата..."
                   class="search-input">
             <button *ngIf="searchTermUnits" 
                     (click)="clearSearchUnits()"
@@ -168,6 +168,8 @@
       </div>
       </div>
 
+      <app-calculator *ngIf = "selectedStation" [selectedStationId]="this.selectedStationId"> </app-calculator>
+
       <!-- Сворачиваемая правая панель -->
       <div class="content-panel" *ngIf="selectedStation" [class.collapsed]="isPanelCollapsed">
         <!-- Кнопка сворачивания -->
@@ -243,20 +245,30 @@
         <label for="activeUnitsCount">Количество агрегатов *</label>
         <input type="number" id="activeUnitsCount" 
                [(ngModel)]="newStation.activeUnitsCount" 
+               #activeUnitsCount = "ngModel"
                name="activeUnitsCount"
                required
                min="1"
                max="20"
-               placeholder='Введите количество'>
+               placeholder='Введите количество'
+               [ngClass]="{'invalid-input': activeUnitsCount.invalid && activeUnitsCount.touched}">
+
+          <div class="error-message" *ngIf="activeUnitsCount.invalid && activeUnitsCount.touched">
+            <span *ngIf="activeUnitsCount.errors?.['required']">Введите количество активных агрегатов.</span>
+            <span *ngIf="activeUnitsCount.errors?.['min']">Минимум 1</span>
+            <span *ngIf="activeUnitsCount.errors?.['max']">Максимум 20</span>
+          </div>
       </div>
 
-      <div class="form-group">
+        <div class="form-group">
         <label for="launchDate">Дата запуска *</label>
         <input type="date" id="launchDate" 
                [(ngModel)]="newStation.launchDate" 
                name="launchDate"
-               required>
+               required
+               [max] = "today">
       </div>
+
 
       <div class="form-actions">
         <button type="button" class="btn-cancel" (click)="closeAddStationForm()">Отмена</button>
@@ -265,10 +277,10 @@
                 (click)="isStationEditing ? editStation() : addStation()">
                 {{ isStationEditing ? 'Сохранить изменения' : 'Добавить станцию' }}
         </button>
-        <div *ngIf="stMsg" class="message" [class.error]="stMsg !== 'Success'">
+      </div>
+      <div *ngIf="stMsg" class="error-message" [class.error]="stMsg !== 'Success'">
           {{stMsg}}
         </div>
-      </div>
     </form>
   </div>
 </div>
@@ -277,8 +289,8 @@
 <div class="modal-overlay" *ngIf="showAddUnitForm" (click)="closeAddUnitForm()">
   <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h3 *ngIf = "!editingUnit">Добавление нового электроагрегата</h3>
-      <h3 *ngIf = "editingUnit">Редактирование электроагрегата</h3>
+      <h3 *ngIf = "!editingUnit">Добавление нового паспорта электроагрегата</h3>
+      <h3 *ngIf = "editingUnit">Редактирование паспорта электроагрегата</h3>
       <button class="close-button" (click)="closeAddUnitForm()">&times;</button>
     </div>
     
@@ -308,36 +320,60 @@
         <label for="ratedPower">Номинальная мощность (МВт) *</label>
         <input type="number" id="ratedPower" 
                [(ngModel)]="newUnit.ratedPower" 
+               #ratedPower="ngModel"
                name="ratedPower"
                required
                min="0.1"
                max="100000"
                step="0.1"
-               placeholder="Введите номинальную мощность">
+               placeholder="Введите номинальную мощность"
+              [ngClass]="{'invalid-input': ratedPower.invalid && ratedPower.touched}">
+
+          <div class="error-message" *ngIf="ratedPower.invalid && ratedPower.touched">
+            <span *ngIf="ratedPower.errors?.['required']">Введите номинальную мощность (МВт).</span>
+            <span *ngIf="ratedPower.errors?.['min']">Минимум 0.1</span>
+            <span *ngIf="ratedPower.errors?.['max']">Максимум 100000</span>
+          </div>
       </div>
 
       <div class="form-group">
         <label for="standartPower">Стандартная мощность (МВт) *</label>
         <input type="number" id="standartPower" 
                [(ngModel)]="newUnit.standartPower" 
+               #standartPower="ngModel"
                name="standartPower"
                required
                min="0.1"
                max="100000"
                step="0.1"
-               placeholder="Введите стандартную мощность">
+               placeholder="Введите стандартную мощность"
+               [ngClass]="{'invalid-input': standartPower.invalid && standartPower.touched}">
+
+          <div class="error-message" *ngIf="standartPower.invalid && standartPower.touched">
+            <span *ngIf="standartPower.errors?.['required']">Введите стандартную мощность (МВт).</span>
+            <span *ngIf="standartPower.errors?.['min']">Минимум 0.1</span>
+            <span *ngIf="standartPower.errors?.['max']">Максимум 100000</span>
+          </div>
       </div>
 
       <div class="form-group">
         <label for="consumptionNorm">Норма расхода газа (м³/ч) *</label>
         <input type="number" id="consumptionNorm" 
-               [(ngModel)]="newUnit.consumptionNorm" 
-               name="consumptionNorm"
-               required
-               min="0"
-               max="1000"
-               step="0.01"
-               placeholder="Введите норму расхода газа">
+            [(ngModel)]="newUnit.consumptionNorm" 
+            #consumptionNorm="ngModel"
+            name="consumptionNorm"
+            required
+            min="0"
+            max="1000"
+            step="0.01"
+            placeholder="Введите норму расхода газа"
+            [ngClass]="{'invalid-input': consumptionNorm.invalid && consumptionNorm.touched}">
+
+          <div class="error-message" *ngIf="consumptionNorm.invalid && consumptionNorm.touched">
+            <span *ngIf="consumptionNorm.errors?.['required']">Введите норму расхода газа (м³/ч).</span>
+            <span *ngIf="consumptionNorm.errors?.['min']">Минимум 0.</span>
+            <span *ngIf="consumptionNorm.errors?.['max']">Максимум 1000.</span>
+          </div>
       </div>
 
       <div class="form-actions">
@@ -345,12 +381,14 @@
         <button type="button" class="btn-submit" 
                 [disabled]="!unitForm.form.valid"
                 (click)="editingUnit ? editUnit() : addUnit()">
-                {{editingUnit ? 'Сохранить изменения' : 'Добавить агрегат' }}
+                {{editingUnit ? 'Сохранить изменения' : 'Добавить паспорт' }}
         </button>
-        <div *ngIf="uMsg" class="message" [class.error]="uMsg !== 'Success'">
+      </div>
+
+      <div *ngIf="uMsg" class="error-message" [class.error]="uMsg !== 'Success'">
           {{uMsg}}
         </div>
-      </div>
+
     </form>
   </div>
 </div>

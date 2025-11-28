@@ -1,48 +1,69 @@
 import { Component} from '@angular/core';
-import { CommonModule } from '@angular/common';
-import {Station, Unit} from './gasforecastModels';
+import { CommonModule, NgIf } from '@angular/common';
+import {Station, Unit} from './stationsUnitsModels';
 import { StationsService} from '../../services/stations.service/stations.service';
 import { UnitsService} from '../../services/units.service/units.service';
 import {Router} from "@angular/router";
 import { FormsModule } from '@angular/forms';
+import { Calculator } from '../calculator/calculator';
 
 @Component({
-  selector: 'app-gasforecast',
-  templateUrl: './gasforecast.html',
-  styleUrls: ['./gasforecast.css'],
+  selector: 'app-stations&units',
+  templateUrl: './stationsUnits.html',
+  styleUrls: ['./stationsUnits.css'],
    imports: [
     CommonModule, 
-    FormsModule
+    FormsModule,
+    Calculator
   ],
   standalone: true
 })
-export class Gasforecast {
+export class StationsUnits {
 
 constructor(private router: Router , private _stations: StationsService, private _units: UnitsService){}
+
+  /*переменные для станций*/
   selectedStation: Station | null = null;
   selectedUnit: Unit | null = null;
-  isPanelCollapsed = false;
   stMsg: string = '';
-  uMsg: string = '';
+  isPanelCollapsed = false;
   stations: Station[] = [];
-  units: Unit[] = [];
-  userRole: string|null = null;
-  showUnitsTable = false;
-  showAddStationForm = false;
-  showAddUnitForm = false;
+  showAddStationForm = false
   selectedStationId: number = 0;
   isStationEditing: boolean = false;
-  editingUnit:Unit|null = null;
   searchTermStations: string = '';
   filteredStations: any[] = [];
+  newStation = {
+    name: '',
+    unitType: '',
+    launchDate: '',
+    activeUnitsCount: 1
+  };
+
+  /*переменные для паспортов электроагрегатов*/
+  uMsg: string = '';
+  units: Unit[] = [];
+  showAddUnitForm = false;
+  showUnitsTable = false;
+  editingUnit:Unit|null = null;
   searchTermUnits: string = '';
   filteredUnits: any[] = [];
   sortColumnUnits: string = '';
   sortDirectionUnits: 'asc' | 'desc' = 'asc';
+  newUnit = {
+    unitType: '',
+    engineType: '',
+    ratedPower: 0,
+    standartPower:0,
+    consumptionNorm:0
+  };
+
+  /*прочие переменные */
+  userRole: string|null = null;
   showDeleteConfirmation: boolean = false;
   itemToDelete: any = null;
   deleteCallback: Function | null = null;
-
+  today: string = (new Date()).toISOString().split('T')[0];
 
   ngOnInit() {
     this.loadStations();
@@ -50,6 +71,7 @@ constructor(private router: Router , private _stations: StationsService, private
     this.userRole = localStorage.getItem('userRole') || null;
   }
 
+  /*функции станций */
   filterStations() {
     if (!this.searchTermStations) {
       this.filteredStations = [...this.stations];
@@ -65,116 +87,6 @@ constructor(private router: Router , private _stations: StationsService, private
     this.searchTermStations= '';
     this.filteredStations = [...this.stations];
   }
-
-   filterUnits() {
-    if (!this.searchTermUnits) {
-      this.filteredUnits = [...this.units];
-    } else {
-      const term = this.searchTermUnits.toLowerCase();
-      this.filteredUnits = this.units.filter(unit =>
-        unit.unitType.toLowerCase().includes(term)
-      );
-    }
-  }
-
-  getSortArrow(column: string): string {
-  if (this.sortColumnUnits !== column) return '↕';   // нет активной сортировки
-  return this.sortDirectionUnits === 'asc' ? '▲' : '▼';
-}
-
-
-  clearSearchUnits() {
-    this.searchTermUnits= '';
-    this.filteredUnits = [...this.units];
-  }
-
-  sortUnits(column: string) {
-  if (this.sortColumnUnits === column) {
-    this.sortDirectionUnits = this.sortDirectionUnits === 'asc' ? 'desc' : 'asc';
-  } else {
-    this.sortColumnUnits = column;
-    this.sortDirectionUnits = 'asc';
-  }
-
-  this.filteredUnits.sort((a, b) => {
-    const valA = a[column];
-    const valB = b[column];
-
-    if (valA < valB) return this.sortDirectionUnits === 'asc' ? -1 : 1;
-    if (valA > valB) return this.sortDirectionUnits === 'asc' ? 1 : -1;
-    return 0;
-  });
-}
-
-  /*stations: Station[] = [
-    {
-      id: 1,
-      name: 'ЭСН1',
-      activeUnitsCount: 2,
-      unitType: 'тип 1',
-      launchDate: new Date('2024-01-15')
-    },
-    {
-      id: 2,
-      name: 'ЭСН2',
-      activeUnitsCount: 3,
-      unitType: 'тип 2',
-      launchDate: new Date('2020-02-11')
-    },
-    {
-      id: 3,
-      name: 'ЭСН3',
-      activeUnitsCount: 4,
-      unitType: 'тип 3',
-      launchDate: new Date('2020-12-11')
-    }
-  ]*/
-
-  /*units: Unit[] = [
-  {
-  id: 1,
-  unitType: 'тип1',
-  engineType: 'поршневой',
-  ratedPower: 1,
-  standartPower: 1,
-  consumptionNorm: 1,
-  },
-  {
-  id: 2,
-  unitType: 'тип2',
-  engineType: 'газотурбинный',
-  ratedPower: 2,
-  standartPower: 2,
-  consumptionNorm: 2,
-  },
-  ]*/
-
-  // Методы для управления таблицей
-  openUnitsTable() {
-    this.showUnitsTable = true;
-    this.selectedStation = null;
-    this.selectedUnit = null;
-  }
-
-  closeUnitsTable() {
-    this.showUnitsTable = false;
-  }
-
-  newStation = {
-    name: '',
-    unitType: '',
-    launchDate: '',
-    activeUnitsCount: 1
-  };
-
-  newUnit = {
-    unitType: '',
-    engineType: '',
-    ratedPower: 0,
-    standartPower:0,
-    consumptionNorm:0
-  };
-
   togglePanel() {
     this.isPanelCollapsed = !this.isPanelCollapsed;
   }
@@ -203,79 +115,7 @@ constructor(private router: Router , private _stations: StationsService, private
     this.stMsg = '';
   }
 
-   public loadUnits()  {
-    this._units.getUnits.subscribe({
-    next: (result) => {
-      if (typeof result === 'number') {
-        this.uMsg = "Ошибка. Попробуйте ещё раз.";
-      } else {
-        this.units = result;
-        this.filterUnits();
-      }
-    },
-    error: (error) => {
-      this.uMsg = "Ошибка. Попробуйте ещё раз.";
-    }
-  });
-    this.uMsg = '';
-  }
-
-  //методы для формы агрегата
-  openAddUnitForm() {
-    this.showAddUnitForm = true;
-    if (this.editingUnit) {
-    this.newUnit = {
-    unitType: this.editingUnit.unitType,
-    engineType: this.editingUnit.engineType,
-    ratedPower: this.editingUnit.ratedPower,
-    standartPower: this.editingUnit.standartPower,
-    consumptionNorm:this.editingUnit.consumptionNorm
-    };}
-    else {
-    this.newUnit = {
-    unitType: '',
-    engineType: '',
-    ratedPower: 0,
-    standartPower:0,
-    consumptionNorm:0
-    };}
-  }
-
-  closeAddUnitForm() {
-   this.showAddUnitForm = false;
-   this.editingUnit = null;
-   this.newUnit = {
-    unitType: '',
-    engineType: '',
-    ratedPower: 0,
-    standartPower:0,
-    consumptionNorm:0
-  };
-  }
-
-  public addUnit() {
-    this._units.addUnit({ ...this.newUnit}).subscribe({
-      next: (status) => {
-        if (status === 201) {
-          this.uMsg = "Success";
-          this.closeAddUnitForm();
-          this.loadUnits();
-        } 
-        else if (status == 401) {
-        this.router.navigate(['/login']);
-        }
-        else {
-          this.uMsg = `Что-то пошло не так. Код ошибки (${status})`;
-        }
-      },
-      error: (error) => {
-        this.uMsg = "Ошибка. Попробуйте ещё раз.";
-      }
-    });
-}
-
-// Новые методы для формы
-  openAddStationForm() {
+    openAddStationForm() {
     this.showAddStationForm = true;
     if (this.isStationEditing && this.selectedStation) {
       this.newStation = {
@@ -302,6 +142,7 @@ constructor(private router: Router , private _stations: StationsService, private
       launchDate: '',
       activeUnitsCount: 1
     };
+    this.stMsg ='';
   }
 
   public addStation() {
@@ -315,6 +156,9 @@ constructor(private router: Router , private _stations: StationsService, private
         else if (status == 401) {
         this.router.navigate(['/login']);
         }
+        else if (status == 409) {
+          this.stMsg = 'ЭСН с таким названием уже существует';
+        }
         else {
           this.stMsg = `Что-то пошло не так. Код ошибки (${status})`;
         }
@@ -325,28 +169,7 @@ constructor(private router: Router , private _stations: StationsService, private
     });
   }
 
-  public deleteUnit(id:number){
-    this._units.deleteUnit(id).subscribe({
-      next: (status) => {
-        if (status === 200) {
-          this.uMsg = "Успешно";
-          this.loadUnits();
-          this.selectedUnit = null;
-        } 
-        else if (status == 401) {
-        this.router.navigate(['/login']);
-        }
-        else {
-          this.uMsg = `Что-то пошло не так. Код ошибки (${status})`;
-        }
-      },
-      error: (error) => {
-        this.uMsg = "Ошибка. Попробуйте ещё раз.";
-      }
-    });
-  }
-
-   public deleteStation(id:number){
+     public deleteStation(id:number){
     this._stations.deleteStation(id).subscribe({
       next: (status) => {
         if (status === 200) {
@@ -378,12 +201,159 @@ constructor(private router: Router , private _stations: StationsService, private
         else if (status == 401) {
         this.router.navigate(['/login']);
         }
+        else if (status == 409) {
+          this.stMsg = 'ЭСН с таким названием уже существует';
+        }
         else {
           this.stMsg = `Что-то пошло не так. Код ошибки (${status})`;
         }
       },
       error: (error) => {
         this.stMsg = "Ошибка. Попробуйте ещё раз.";
+      }
+    });
+  }
+
+  /*функции паспортов электроагрегатов*/
+
+   filterUnits() {
+    if (!this.searchTermUnits) {
+      this.filteredUnits = [...this.units];
+    } else {
+      const term = this.searchTermUnits.toLowerCase();
+      this.filteredUnits = this.units.filter(unit =>
+        unit.unitType.toLowerCase().includes(term)
+      );
+    }
+  }
+
+  getSortArrow(column: string): string {
+  if (this.sortColumnUnits !== column) return '↕';   // нет активной сортировки
+  return this.sortDirectionUnits === 'asc' ? '▲' : '▼';
+  }
+
+  clearSearchUnits() {
+    this.searchTermUnits= '';
+    this.filteredUnits = [...this.units];
+  }
+
+  sortUnits(column: string) {
+  if (this.sortColumnUnits === column) {
+    this.sortDirectionUnits = this.sortDirectionUnits === 'asc' ? 'desc' : 'asc';
+  } else {
+    this.sortColumnUnits = column;
+    this.sortDirectionUnits = 'asc';
+  }
+
+  this.filteredUnits.sort((a, b) => {
+    const valA = a[column];
+    const valB = b[column];
+    if (valA < valB) return this.sortDirectionUnits === 'asc' ? -1 : 1;
+    if (valA > valB) return this.sortDirectionUnits === 'asc' ? 1 : -1;
+    return 0;
+  });
+  }
+
+  openUnitsTable() {
+    this.showUnitsTable = true;
+    this.selectedStation = null;
+    this.selectedUnit = null;
+  }
+
+  closeUnitsTable() {
+    this.showUnitsTable = false;
+  }
+  public loadUnits()  {
+    this._units.getUnits.subscribe({
+    next: (result) => {
+      if (typeof result === 'number') {
+        this.uMsg = "Ошибка. Попробуйте ещё раз.";
+      } else {
+        this.units = result;
+        this.filterUnits();
+      }
+    },
+    error: (error) => {
+      this.uMsg = "Ошибка. Попробуйте ещё раз.";
+    }
+  });
+    this.uMsg = '';
+  }
+
+  openAddUnitForm() {
+    this.showAddUnitForm = true;
+    if (this.editingUnit) {
+    this.newUnit = {
+    unitType: this.editingUnit.unitType,
+    engineType: this.editingUnit.engineType,
+    ratedPower: this.editingUnit.ratedPower,
+    standartPower: this.editingUnit.standartPower,
+    consumptionNorm:this.editingUnit.consumptionNorm
+    };}
+    else {
+    this.newUnit = {
+    unitType: '',
+    engineType: '',
+    ratedPower: 0,
+    standartPower:0,
+    consumptionNorm:0
+    };}
+  }
+
+  closeAddUnitForm() {
+   this.showAddUnitForm = false;
+   this.editingUnit = null;
+   this.newUnit = {
+    unitType: '',
+    engineType: '',
+    ratedPower: 0,
+    standartPower:0,
+    consumptionNorm:0
+  };
+  this.uMsg ='';
+  }
+
+  public addUnit() {
+    this._units.addUnit({ ...this.newUnit}).subscribe({
+      next: (status) => {
+        if (status === 201) {
+          this.uMsg = "Success";
+          this.closeAddUnitForm();
+          this.loadUnits();
+        } 
+        else if (status == 401) {
+        this.router.navigate(['/login']);
+        }
+        else if (status == 409) {
+          this.uMsg = 'Паспорт электроагрегата с таким названием уже существует';
+        }
+        else {
+          this.uMsg = `Что-то пошло не так. Код ошибки (${status})`;
+        }
+      },
+      error: (error) => {
+        this.uMsg = "Ошибка. Попробуйте ещё раз.";
+      }
+    });
+}
+
+public deleteUnit(id:number){
+    this._units.deleteUnit(id).subscribe({
+      next: (status) => {
+        if (status === 200) {
+          this.uMsg = "Успешно";
+          this.loadUnits();
+          this.selectedUnit = null;
+        } 
+        else if (status == 401) {
+        this.router.navigate(['/login']);
+        }
+        else {
+          this.uMsg = `Что-то пошло не так. Код ошибки (${status})`;
+        }
+      },
+      error: (error) => {
+        this.uMsg = "Ошибка. Попробуйте ещё раз.";
       }
     });
   }
@@ -399,6 +369,9 @@ constructor(private router: Router , private _stations: StationsService, private
         } 
         else if (status == 401) {
         this.router.navigate(['/login']);
+        }
+        else if (status == 409) {
+          this.uMsg = 'Паспорт электроагрегата с таким названием уже существует';
         }
         else {
           this.uMsg = `Что-то пошло не так. Код ошибки (${status})`;
@@ -421,14 +394,12 @@ openDeleteConfirmation(item: any, callback: Function) {
   this.showDeleteConfirmation = true;
 }
 
-// Закрыть окно
 closeDeleteConfirmation() {
   this.showDeleteConfirmation = false;
   this.itemToDelete = null;
   this.deleteCallback = null;
 }
 
-// Подтверждение удаления
 confirmDelete() {
   if (this.deleteCallback && this.itemToDelete) {
     this.deleteCallback(this.itemToDelete.id);
