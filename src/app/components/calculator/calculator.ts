@@ -1,6 +1,6 @@
 import { ConsumptionCalculateService, CalculationRequest, CalculationResponse} from '../../services/consumption-calculate.service/consumption-calculate.service';
 import { Component, Input} from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 @Component({

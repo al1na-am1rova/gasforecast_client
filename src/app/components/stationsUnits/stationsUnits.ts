@@ -65,10 +65,25 @@ constructor(private router: Router , private _stations: StationsService, private
   deleteCallback: Function | null = null;
   today: string = (new Date()).toISOString().split('T')[0];
 
+  isLoading = true;
+
   ngOnInit() {
+    this.checkAuth();
+  }
+
+  ngAfterViewInit() {
     this.loadStations();
     this.loadUnits();
     this.userRole = localStorage.getItem('userRole') || null;
+    this.checkAuth();
+    this.isLoading = false;
+  }
+
+  checkAuth(): void {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      this.router.navigate(['/login']);
+    }
   }
 
   /*функции станций */
@@ -405,5 +420,11 @@ confirmDelete() {
     this.deleteCallback(this.itemToDelete.id);
   }
   this.closeDeleteConfirmation();
+}
+
+logout() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('userRole');
+  this.router.navigate(["/login"]);
 }
 }

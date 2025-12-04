@@ -1,10 +1,17 @@
-<div class="container">
+<div *ngIf="isLoading" class="loading-overlay">
+  <div class="spinner"></div>
+</div>
+
+<div class="container" *ngIf ="!isLoading">
   <!-- Верхняя панель с кнопкой -->
   <div class="top-panel">
     <!-- Левая панель -->
     <div class="sidebar">
       <div class="sidebar-header">
-        <div class = "header-tabs">Электростанции
+        <div class = "header-tabs"> 
+          <button type = "button" class = "stations-list-button" (click) = "selectedStation = null; showUnitsTable = false;">
+            Электростанции
+          </button>
           <button type="button" class="add-button-header" (click)="openAddStationForm()" *ngIf="userRole==='admin'">
               + Добавить
           </button>
@@ -23,6 +30,16 @@
       </svg>
       <span>Паспорта электроагрегатов</span>
     </button>
+
+    <button class="logout-button-subtle" (click) = "logout()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+        <polyline points="16 17 21 12 16 7"></polyline>
+        <line x1="21" y1="12" x2="9" y2="12"></line>
+      </svg>
+      <span>Выход</span>
+    </button>
+
   </div>
 
   <!-- Основное содержимое -->
@@ -331,7 +348,7 @@
 
           <div class="error-message" *ngIf="ratedPower.invalid && ratedPower.touched">
             <span *ngIf="ratedPower.errors?.['required']">Введите номинальную мощность (МВт).</span>
-            <span *ngIf="ratedPower.errors?.['min']">Минимум 0.1</span>
+            <span *ngIf="ratedPower.errors?.['min']">Минимум 1</span>
             <span *ngIf="ratedPower.errors?.['max']">Максимум 100000</span>
           </div>
       </div>
@@ -351,7 +368,7 @@
 
           <div class="error-message" *ngIf="standartPower.invalid && standartPower.touched">
             <span *ngIf="standartPower.errors?.['required']">Введите стандартную мощность (МВт).</span>
-            <span *ngIf="standartPower.errors?.['min']">Минимум 0.1</span>
+            <span *ngIf="standartPower.errors?.['min']">Минимум 1</span>
             <span *ngIf="standartPower.errors?.['max']">Максимум 100000</span>
           </div>
       </div>
@@ -371,8 +388,8 @@
 
           <div class="error-message" *ngIf="consumptionNorm.invalid && consumptionNorm.touched">
             <span *ngIf="consumptionNorm.errors?.['required']">Введите норму расхода газа (м³/ч).</span>
-            <span *ngIf="consumptionNorm.errors?.['min']">Минимум 0.</span>
-            <span *ngIf="consumptionNorm.errors?.['max']">Максимум 1000.</span>
+            <span *ngIf="consumptionNorm.errors?.['min']">Минимум 0.1</span>
+            <span *ngIf="consumptionNorm.errors?.['max']">Максимум 1000</span>
           </div>
       </div>
 

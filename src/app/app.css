@@ -1,19 +1,16 @@
-/* Общие стили для страницы */
-body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: rgb(237, 235, 235);
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+/* styles.css или app.component.css */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-/* Адаптивность для мобильных устройств */
-@media (max-width: 480px) {
-    .login-container {
-        margin: 20px;
-        padding: 30px 25px;
-    }
+.main-content {
+  flex: 1 0 auto; /* Занимает все доступное пространство */
+  padding: 20px; /* опционально */
+}
+
+app-footer {
+  flex-shrink: 0; /* Футер не сжимается */
+  margin-top: auto; /* Толкает футер вниз */
 }

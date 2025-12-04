@@ -45,6 +45,13 @@
   height: 100%;
 }
 
+.stations-list-button {
+  border: none;
+  cursor: pointer;
+  background: #ffffff;
+}
+
+
 /* Кнопка таблицы в верхней панели */
 .table-view-button-top {
   box-shadow: 1px 0 5px rgba(0, 0, 0, 0.08);
@@ -82,6 +89,27 @@
 
 .table-view-button-top:hover svg {
   color: #2980b9;
+}
+
+.logout-button-subtle {
+  margin-left: auto;
+  padding: 8px 16px;
+  background-color: #f8f9fa;
+  color: #495057;
+  border: 1px solid #dee2e6;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.logout-button-subtle:hover {
+  background-color: #e9ecef;
+  border-color: #dc3545;
+  color: #dc3545;
 }
 
 /* ===== ОСНОВНОЙ КОНТЕНТ ===== */
@@ -832,6 +860,33 @@
   background: #ccc;
   cursor: not-allowed;
   transform: none;
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* ===== АДАПТИВНОСТЬ ===== */
