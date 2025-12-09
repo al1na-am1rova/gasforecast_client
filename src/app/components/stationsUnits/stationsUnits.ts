@@ -74,13 +74,13 @@ constructor(private router: Router , private _stations: StationsService, private
   ngAfterViewInit() {
     this.loadStations();
     this.loadUnits();
-    this.userRole = localStorage.getItem('userRole') || null;
+    this.userRole = sessionStorage.getItem('userRole') || null;
     this.checkAuth();
     this.isLoading = false;
   }
 
   checkAuth(): void {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     if (!token) {
       this.router.navigate(['/login']);
     }
@@ -422,9 +422,4 @@ confirmDelete() {
   this.closeDeleteConfirmation();
 }
 
-logout() {
-  localStorage.removeItem('token');
-  localStorage.removeItem('userRole');
-  this.router.navigate(["/login"]);
-}
 }

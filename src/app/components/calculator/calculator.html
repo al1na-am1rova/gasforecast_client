@@ -16,7 +16,7 @@
         <!-- Температура -->
         <div class="form-group">
           <label class="form-label">
-            Температура наружного воздуха <span class="required-star">*</span>
+            Температура наружного воздуха (С) <span class="required-star">*</span>
           </label>
 
           <input
@@ -41,7 +41,7 @@
         <!-- Время работы -->
         <div class="form-group">
           <label class="form-label">
-            Время работы <span class="required-star">*</span>
+            Время работы (часы) <span class="required-star">*</span>
           </label>
 
           <input
@@ -50,6 +50,7 @@
             #operatingHours="ngModel"
             required
             min="0"
+            max="100000"
             type="number"
             class="form-input"
             placeholder="Введите время работы в часах"
@@ -58,13 +59,14 @@
           <div class="error-message" *ngIf="operatingHours.invalid && operatingHours.touched">
             <span *ngIf="operatingHours.errors?.['required']">Введите время работы.</span>
             <span *ngIf="operatingHours.errors?.['min']">Не может быть меньше 0.</span>
+            <span *ngIf="operatingHours.errors?.['max']">Не может быть больше 100000.</span>
           </div>
         </div>
 
         <!-- Мощность установки -->
         <div class="form-group">
           <label class="form-label">
-            Мощность установки <span class="required-star">*</span>
+            Мощность установки (%) <span class="required-star">*</span>
           </label>
 
           <input
@@ -89,7 +91,7 @@
         <!-- Низшая теплота сгорания -->
         <div class="form-group">
           <label class="form-label">
-            Низшая теплота сгорания <span class="required-star">*</span>
+            Низшая теплота сгорания топливного газа (кДж/м³) <span class="required-star">*</span>
           </label>
 
           <input
@@ -131,6 +133,5 @@
     <h3>Результат расчёта</h3>
     <p class="result-value"  *ngIf="msg" >{{ msg }}</p>
     <p class="result-value"  *ngIf="isSuccessfull"> Расход газа <strong>{{ this.calculationResponseData.gasConsumption }} </strong> м³</p>
-    <p class="result-value" *ngIf="isSuccessfull">Время расчета <strong>{{this.calculationResponseData.calculationTime | date:'hh:mm dd.MM.yyyy'}}</strong></p>
   </div>
 </div>

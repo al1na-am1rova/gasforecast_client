@@ -1,4 +1,15 @@
-<div class="login-container">
+<div  class="login-container" *ngIf="getLogin()">
+ <div>
+  <p class = "text">Вы уже вошли в аккаунт с логином <strong>{{getLogin()}}</strong> </p>
+  <p class = "text">Вы уверены, что хотите выйти?</p>
+  <div class = "buttons-container">
+  <button class = "logout-button" type="submit" (click)="logOut()">Выход</button>
+  <button class = "cancel-button" type="submit" (click)="goMainPage()">Отмена</button>
+  </div>
+ </div>
+</div>
+
+<div class="login-container" *ngIf="!getLogin()">
   <h3>Войдите в аккаунт</h3>
   <div>
     <div class="spacer">

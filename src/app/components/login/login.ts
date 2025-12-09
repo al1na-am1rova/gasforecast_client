@@ -9,20 +9,35 @@ import { CommonModule } from '@angular/common';
   templateUrl: 'login.html',
   styleUrls: ['login.css'],
   standalone: true,
-  imports: [CommonModule,FormsModule]
+  imports: [CommonModule, FormsModule]
 })
 export class Login {
   loginData = {
-    username: '',
-    password: ''
+  username: '',
+  password: ''
   };
 
-  msg = ''; // для отображения сообщений
-  submitted = false; // флаг нажатия кнопки
+  msg = '';
+  submitted = false;
 
-  constructor(private router: Router, private auth: AuthService) {}
+  constructor(private router: Router, private auth: AuthService) {
+  }
 
-  public onLogin() {
+  getLogin(): string | null{
+    console.log(sessionStorage.getItem('userName'));
+    return sessionStorage.getItem('userName')
+  }
+
+  logOut() {
+    sessionStorage.clear();
+    this.router.navigate(["/login"]);
+  }
+
+  goMainPage() {
+    this.router.navigate(["/stationsUnits"]);
+  }
+
+  public onLogin(): void {
     this.submitted = true;
 
     if (!this.loginData.username || !this.loginData.password) {
@@ -35,6 +50,7 @@ export class Login {
     this.auth.login({ ...this.loginData }).subscribe({
       next: (status) => {
         if (status === 200) {
+          
           this.msg = "Успешно";
           this.router.navigate(['/stationsUnits']);
         } else if (status === 401) {

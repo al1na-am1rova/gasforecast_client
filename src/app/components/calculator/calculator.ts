@@ -32,6 +32,7 @@ msg:string = "";
 isSuccessfull:boolean=false;
 
 calculate () {
+  this.msg = "";
   this.isSuccessfull = false;
   this.calculationRequestData.stationId = this.selectedStationId;
   this._calculator.calculateConsumption(({ ...this.calculationRequestData})).subscribe({

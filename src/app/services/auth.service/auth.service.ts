@@ -24,11 +24,12 @@ export class AuthService {
         map(res => {
           if (res.status === 200) {
             const token = res.body.accessToken;
-            localStorage.setItem("token", token);
+            /*localStorage.setItem("token", token);*/
+            sessionStorage.setItem("token", token);
             const role = res.body.role;
-            localStorage.setItem("userRole", role);
-
-             console.log(token, role);
+            sessionStorage.setItem("userRole", role);
+            const username = res.body.username;
+            sessionStorage.setItem("userName", username);
           }
           return res.status;
         }),

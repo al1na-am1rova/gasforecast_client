@@ -6,8 +6,8 @@
 }
 
 .main-content {
-  flex: 1 0 auto; /* Занимает все доступное пространство */
-  padding: 20px; /* опционально */
+  flex: 1 0 auto; 
+  padding: 5px; /* опционально */
 }
 
 app-footer {

@@ -6,7 +6,7 @@ export const httpInterceptor: HttpInterceptorFn = (req, next) => {
   console.log(headers);
   
   if (req.url.includes('Electric')) {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     if (token) {
       headers = headers.append('Authorization', `Bearer ${token}`);
     }

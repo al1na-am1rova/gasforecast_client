@@ -8,6 +8,10 @@ h3 {
     letter-spacing: -0.5px;
 }
 
+.text {
+    text-align: center;
+}
+
 /* Контейнер формы */
 .login-container {
     background: white;
@@ -93,4 +97,56 @@ button[type="submit"]:hover {
 button[type="submit"]:active {
     transform: translateY(0);
     box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+}
+
+.buttons-container {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  justify-content: center;
+  align-items: center; 
+}
+
+.logout-button[type="submit"] {
+    width: 40%;
+    padding: 10px 10px;
+    background: #2980b9;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 300;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Эффекты при наведении на кнопку */
+.logout-button[type="submit"]:hover {
+    background: #2573a7;
+    transform: translateY(-1px);
+    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+}
+
+.cancel-button[type="submit"] {
+    width: 40%;
+    padding: 10px 10px;
+    color: #666;
+    background: #e5e5e6;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 300;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Эффекты при наведении на кнопку */
+.cancel-button[type="submit"]:hover {
+    background: #f8f9fa;
+    transform: translateY(-1px);
+    box-shadow: 0 5px 15px #999;
 }
