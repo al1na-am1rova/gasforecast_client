@@ -1,0 +1,222 @@
+<div class="users-container">
+  <!-- Заголовок и кнопка -->
+  <div class="users-header">
+    <h2 class="users-title">Пользователи</h2>
+    
+    <div class="users-header-right">
+      <div class="users-stats">
+        <span class="stat-item">
+          <span class="stat-label">Всего:</span>
+          <span class="stat-value">{{ users.length }}</span>
+        </span>
+      </div>
+      
+      <button class="add-user-btn" (click)="showAddForm = true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        <span>{{ showAddForm ? 'Скрыть форму' : 'Добавить пользователя' }}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Форма создания пользователя -->
+  <div *ngIf="showAddForm" class="add-user-form">
+    <h3>Создание нового пользователя</h3>
+    
+    <form (ngSubmit)="createUser()" #userForm="ngForm" class="user-form">
+      <!-- Имя пользователя -->
+      <div class="form-group">
+        <label for="username" class="form-label">
+          Имя пользователя *
+          <span class="hint">(будет использоваться для входа в систему)</span>
+        </label>
+        <input 
+          type="text" 
+          id="username" 
+          name="username" 
+          [(ngModel)]="newUser.username" 
+          required
+          minlength="3"
+          maxlength="50"
+          class="form-input"
+          placeholder="Введите имя пользователя"
+          #usernameInput="ngModel">
+        
+        <!-- Валидационные сообщения -->
+        <div *ngIf="usernameInput.invalid && (usernameInput.dirty || usernameInput.touched)" 
+             class="validation-error">
+          <div *ngIf="usernameInput.errors?.['required']">
+            Имя пользователя обязательно
+          </div>
+          <div *ngIf="usernameInput.errors?.['minlength']">
+            Минимум 3 символа
+          </div>
+        </div>
+      </div>
+
+      <!-- Пароль -->
+      <div class="form-group">
+        <label for="password" class="form-label">
+          Одноразовый пароль *
+          <span class="hint">(пользователь сменит его при первом входе)</span>
+        </label>
+        <div class="password-container">
+          <input 
+            [type]="showPassword ? 'text' : 'password'" 
+            id="password" 
+            name="password" 
+            [(ngModel)]="newUser.password" 
+            required
+            minlength="6"
+            class="form-input"
+            placeholder="Введите временный пароль"
+            #passwordInput="ngModel">
+          
+          <button type="button" class="toggle-password" (click)="togglePasswordVisibility()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path *ngIf="!showPassword" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle *ngIf="!showPassword" cx="12" cy="12" r="3"></circle>
+              <path *ngIf="showPassword" d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+              <line *ngIf="showPassword" x1="1" y1="1" x2="23" y2="23"></line>
+            </svg>
+          </button>
+        </div>
+        
+        <!-- Валидационные сообщения -->
+        <div *ngIf="passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)" 
+             class="validation-error">
+          <div *ngIf="passwordInput.errors?.['required']">
+            Пароль обязателен
+          </div>
+          <div *ngIf="passwordInput.errors?.['minlength']">
+            Минимум 6 символов
+          </div>
+        </div>
+        
+        <!-- Генератор пароля -->
+        <div class="password-generator">
+          <button type="button" class="generate-password-btn" (click)="generatePassword()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+            </svg>
+            Сгенерировать пароль
+          </button>
+          <div class="generated-password" *ngIf="generatedPassword">
+            Сгенерирован: <code>{{ generatedPassword }}</code>
+          </div>
+        </div>
+      </div>
+
+      <!-- Роль -->
+      <div class="form-group">
+        <label for="role" class="form-label">Роль *</label>
+        <select 
+          id="role" 
+          name="role" 
+          [(ngModel)]="newUser.role" 
+          required
+          class="form-select"
+          #roleInput="ngModel">
+          <option value="" disabled selected>Выберите роль</option>
+          <option value="user">Обычный пользователь</option>
+          <option value="admin">Администратор</option>
+        </select>
+        
+        <!-- Валидационные сообщения -->
+        <div *ngIf="roleInput.invalid && (roleInput.dirty || roleInput.touched)" 
+             class="validation-error">
+          <div *ngIf="roleInput.errors?.['required']">
+            Выберите роль пользователя
+          </div>
+        </div>
+        
+        <!-- Описание ролей -->
+        <div class="role-descriptions">
+          <div class="role-description">
+            <strong>Обычный пользователь:</strong> просмотр данных, работа со станциями
+          </div>
+          <div class="role-description">
+            <strong>Администратор:</strong> полный доступ, управление пользователями
+          </div>
+        </div>
+      </div>
+
+      <!-- Кнопки формы -->
+      <div class="form-actions">
+        <button 
+          type="submit" 
+          class="btn-submit" 
+          [disabled]="!userForm.form.valid || isSubmitting">
+          <span *ngIf="!isSubmitting">Создать пользователя</span>
+          <span *ngIf="isSubmitting" class="loading">Создание...</span>
+        </button>
+        
+        <button 
+          type="button" 
+          class="btn-cancel" 
+          (click)="cancelCreation()"
+          [disabled]="isSubmitting">
+          Отмена
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Сообщения -->
+  <div *ngIf="message" class="message" [class.success]="isSuccess" [class.error]="!isSuccess">
+    {{ message }}
+  </div>
+
+  <!-- Таблица пользователей -->
+  <div class="table-container">
+    <!-- существующая таблица -->
+  </div>
+</div>
+
+  <!-- Таблица -->
+  <div class="table-container">
+    <table class="users-table">
+      <thead>
+        <tr>
+          <th class="th-name">
+            <div class="th-content">
+              Имя пользователя
+            </div>
+          </th>
+          <th class="th-role">
+            <div class="th-content">
+              Роль
+            </div>
+          </th>
+          <th class="th-last-login">
+            <div class="th-content">
+              Последний вход
+            </div>
+          </th>
+          <th class="th-actions">Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users" 
+            class="user-row">
+          <td class="td-name">
+            <div class="user-name">{{ user.userName }}</div>
+          </td>
+          <td class="td-role">
+            <div class="role-badge">{{ user.role }}</div>
+          </td>
+          <td class="td-last-login">
+            <div *ngIf="user.lastSessionTime; else neverLoggedIn" class="last-login-info">
+              <div class="last-login-time">{{ user.lastSessionTime}}</div>
+            </div>
+            <ng-template #neverLoggedIn>
+              <div class="never-logged-in">
+                <span class="never-text">Никогда</span>
+              </div>
+            </ng-template>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>

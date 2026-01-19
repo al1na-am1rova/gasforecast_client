@@ -14,7 +14,8 @@ import { Calculator } from '../calculator/calculator';
    imports: [
     CommonModule, 
     FormsModule,
-    Calculator
+    Calculator,
+    NgIf
   ],
   standalone: true
 })
@@ -65,19 +66,15 @@ constructor(private router: Router , private _stations: StationsService, private
   deleteCallback: Function | null = null;
   today: string = (new Date()).toISOString().split('T')[0];
 
-  isLoading = true;
+  //isLoading = true;
 
   ngOnInit() {
-    this.checkAuth();
-  }
-
-  ngAfterViewInit() {
     this.loadStations();
     this.loadUnits();
     this.userRole = sessionStorage.getItem('userRole') || null;
     this.checkAuth();
-    this.isLoading = false;
   }
+
 
   checkAuth(): void {
     const token = sessionStorage.getItem('token');

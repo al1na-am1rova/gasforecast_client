@@ -28,4 +28,8 @@ logout() {
   sessionStorage.removeItem('userName');
   this.router.navigate(["/login"]);
 }
+
+goToAdminPage() {
+  this.router.navigate(["/adminPage"]);
+}
 }

@@ -1,16 +1,6 @@
-/* Заголовок формы */
-h3 {
-    text-align: center;
-    color: #2c3e50;
-    font-size: 28px;
-    font-weight: 500;
-    margin-bottom: 30px;
-    letter-spacing: -0.5px;
-}
-
-.text {
-    text-align: center;
-}
+/* ==============================
+   ОБЩИЕ СТИЛИ ФОРМЫ АВТОРИЗАЦИИ
+   ============================== */
 
 /* Контейнер формы */
 .login-container {
@@ -22,7 +12,62 @@ h3 {
     max-width: 400px;
     border: 1px solid #e1e8ed;
     margin: 60px auto;
+    transition: all 0.3s ease;
 }
+
+/* Адаптивность контейнера */
+@media (max-width: 480px) {
+    .login-container {
+        padding: 30px 20px;
+        margin: 30px auto;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    }
+}
+
+/* ==============================
+   ЗАГОЛОВКИ И ТЕКСТ
+   ============================== */
+
+/* Заголовок формы */
+h3 {
+    text-align: center;
+    color: #2c3e50;
+    font-size: 28px;
+    font-weight: 500;
+    margin-bottom: 30px;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+}
+
+.text {
+    text-align: center;
+    color: #5a6c7d;
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.text strong {
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+/* Информационный текст для смены пароля */
+.password-change-info {
+    text-align: center;
+    color: #e67e22;
+    background-color: #fef9e7;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border-left: 4px solid #f39c12;
+    margin-bottom: 25px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* ==============================
+   ПОЛЯ ФОРМЫ
+   ============================== */
 
 /* Отступы между элементами формы */
 .spacer {
@@ -52,6 +97,7 @@ input[type="password"] {
     box-sizing: border-box;
     background-color: #f8f9fa;
     color: #2c3e50;
+    font-family: inherit;
 }
 
 /* Состояние фокуса для полей ввода */
@@ -70,7 +116,103 @@ input[type="password"]::placeholder {
     font-weight: 400;
 }
 
-/* Стили для кнопки */
+/* Состояние ошибки для полей ввода */
+input.error {
+    border-color: #e74c3c;
+    background-color: #fdf7f7;
+}
+
+input.error:focus {
+    box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+}
+
+/* ==============================
+   КОНТЕЙНЕР ПАРОЛЯ С КНОПКОЙ ПОКАЗА
+   ============================== */
+
+.password-container {
+    position: relative;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    color: #7f8c8d;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toggle-password:hover {
+    color: #3498db;
+}
+
+.toggle-password svg {
+    display: block;
+    width: 20px;
+    height: 20px;
+}
+
+/* ==============================
+   ВАЛИДАЦИЯ И ПОДСКАЗКИ
+   ============================== */
+
+.validation-error {
+    color: #e74c3c;
+    font-size: 12px;
+    margin-top: 6px;
+    padding-left: 4px;
+}
+
+.validation-error div {
+    margin-top: 3px;
+}
+
+.password-requirements {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #7f8c8d;
+}
+
+.password-requirements ul {
+    margin: 5px 0;
+    padding-left: 20px;
+}
+
+.password-requirements li {
+    margin-bottom: 3px;
+}
+
+.password-match-error {
+    color: #e74c3c;
+    font-size: 12px;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.password-match-success {
+    color: #27ae60;
+    font-size: 12px;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* ==============================
+   КНОПКИ ФОРМЫ
+   ============================== */
+
+/* Основная кнопка отправки */
 button[type="submit"] {
     width: 100%;
     padding: 14px 16px;
@@ -84,6 +226,7 @@ button[type="submit"] {
     transition: all 0.3s ease;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    font-family: inherit;
 }
 
 /* Эффекты при наведении на кнопку */
@@ -99,23 +242,42 @@ button[type="submit"]:active {
     box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
 }
 
+/* Отключенная кнопка */
+button[type="submit"]:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+button[type="submit"]:disabled:hover {
+    background-color: #bdc3c7;
+    transform: none;
+    box-shadow: none;
+}
+
+/* ==============================
+   КОНТЕЙНЕР С НЕСКОЛЬКИМИ КНОПКАМИ
+   ============================== */
+
 .buttons-container {
-  display: flex;
-  flex-direction: row;
-  gap: 8px;
-  justify-content: center;
-  align-items: center; 
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
 }
 
 .logout-button[type="submit"] {
-    width: 40%;
-    padding: 10px 10px;
+    width: 100%;
+    padding: 12px 16px;
     background: #2980b9;
     color: white;
     border: none;
     border-radius: 8px;
-    font-size: 16px;
-    font-weight: 300;
+    font-size: 15px;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
     text-transform: uppercase;
@@ -130,14 +292,14 @@ button[type="submit"]:active {
 }
 
 .cancel-button[type="submit"] {
-    width: 40%;
-    padding: 10px 10px;
+    width: 100%;
+    padding: 12px 16px;
     color: #666;
-    background: #e5e5e6;
+    background: #f0f0f0;
     border: none;
     border-radius: 8px;
-    font-size: 16px;
-    font-weight: 300;
+    font-size: 15px;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
     text-transform: uppercase;
@@ -146,7 +308,206 @@ button[type="submit"]:active {
 
 /* Эффекты при наведении на кнопку */
 .cancel-button[type="submit"]:hover {
-    background: #f8f9fa;
+    background: #e0e0e0;
     transform: translateY(-1px);
-    box-shadow: 0 5px 15px #999;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* ==============================
+   СООБЩЕНИЯ И СТАТУСЫ
+   ============================== */
+
+/* Сообщение формы */
+.msg {
+    text-align: center;
+    margin: 20px 0;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Успешное сообщение */
+.msg.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+/* Сообщение об ошибке */
+.msg.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Информационное сообщение */
+.msg.info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+/* Предупреждение */
+.msg.warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+/* ==============================
+   ИНДИКАТОР ЗАГРУЗКИ
+   ============================== */
+
+.loading-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 15px;
+    color: #3498db;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.loading-spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(52, 152, 219, 0.3);
+    border-top: 3px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ==============================
+   ДОПОЛНИТЕЛЬНЫЕ ЭЛЕМЕНТЫ ДЛЯ СМЕНЫ ПАРОЛЯ
+   ============================== */
+
+/* Заголовок для формы смены пароля */
+.password-change-title {
+    text-align: center;
+    color: #2c3e50;
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+/* Информация о пользователе */
+.user-info {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+    border-left: 4px solid #3498db;
+}
+
+.user-info strong {
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+/* Контейнер для подтверждения пароля */
+.confirm-password-container {
+    margin-top: 5px;
+}
+
+/* Кнопка отмены смены пароля */
+.cancel-password-change {
+    background: #95a5a6;
+    color: white;
+    margin-top: 10px;
+}
+
+.cancel-password-change:hover {
+    background: #7f8c8d;
+}
+
+/* ==============================
+   УТИЛИТЫ
+   ============================== */
+
+/* Скрытый элемент */
+.hidden {
+    display: none !important;
+}
+
+/* Полупрозрачный элемент */
+.disabled-overlay {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Текст помощи */
+.help-text {
+    font-size: 12px;
+    color: #7f8c8d;
+    margin-top: 4px;
+    font-style: italic;
+}
+
+/* Ссылка в форме */
+.form-link {
+    color: #3498db;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.2s;
+}
+
+.form-link:hover {
+    color: #2980b9;
+    text-decoration: underline;
+}
+
+/* ==============================
+   МЕДИА-ЗАПРОСЫ ДЛЯ АДАПТИВНОСТИ
+   ============================== */
+
+@media (max-width: 768px) {
+    .buttons-container {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .logout-button[type="submit"],
+    .cancel-button[type="submit"] {
+        width: 100%;
+    }
+    
+    h3 {
+        font-size: 24px;
+    }
+    
+    input[type="text"],
+    input[type="password"],
+    button[type="submit"] {
+        padding: 12px 14px;
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .login-container {
+        padding: 25px 15px;
+    }
+    
+    h3 {
+        font-size: 22px;
+        margin-bottom: 20px;
+    }
+    
+    .spacer {
+        margin-bottom: 18px;
+    }
+    
+    .text {
+        font-size: 14px;
+    }
 }

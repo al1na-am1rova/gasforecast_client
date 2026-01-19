@@ -1,0 +1,546 @@
+/* ====================
+   ОСНОВНЫЕ СТИЛИ КОНТЕЙНЕРА
+   ==================== */
+.users-container {
+  background: #ffffff;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  padding: 16px;
+  margin: 20px auto;
+  width: 98%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ====================
+   ЗАГОЛОВОК И СТАТИСТИКА
+   ==================== */
+.users-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f1f3f4;
+  
+  .users-title {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 20px;
+    font-weight: 600;
+  }
+}
+
+.users-header-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.users-stats {
+  display: flex;
+  gap: 16px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #666;
+  font-size: 13px;
+  
+  .stat-label {
+    color: #888;
+  }
+  
+  .stat-value {
+    font-weight: 500;
+    color: #2c3e50;
+  }
+}
+
+/* Кнопка добавления */
+.add-user-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: #2980b9;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  
+  &:hover {
+    background-color: #2573a7;
+  }
+  
+  svg {
+    stroke: white;
+  }
+}
+
+/* ====================
+   ФОРМА СОЗДАНИЯ ПОЛЬЗОВАТЕЛЯ
+   ==================== */
+.add-user-form {
+  background: white;
+  border: 1px solid #e1e5e9;
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  
+  h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #2c3e50;
+    font-size: 18px;
+    font-weight: 600;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f1f3f4;
+  }
+}
+
+.user-form {
+  max-width: 500px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #2c3e50;
+  font-size: 14px;
+  
+  .hint {
+    font-weight: normal;
+    color: #666;
+    font-size: 12px;
+    margin-left: 6px;
+  }
+}
+
+.form-input, .form-select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+  background: white;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  
+  &:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  }
+  
+  &:disabled {
+    background-color: #f8f9fa;
+    cursor: not-allowed;
+  }
+}
+
+.form-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23495057' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+/* Контейнер для пароля */
+.password-container {
+  position: relative;
+  
+  .toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    color: #666;
+    
+    &:hover {
+      color: #333;
+    }
+    
+    svg {
+      display: block;
+    }
+  }
+}
+
+/* Генератор пароля */
+.password-generator {
+  margin-top: 8px;
+  
+  .generate-password-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #495057;
+    cursor: pointer;
+    transition: all 0.2s;
+    
+    &:hover {
+      background-color: #e9ecef;
+      border-color: #ced4da;
+    }
+    
+    svg {
+      stroke: #495057;
+    }
+  }
+  
+  .generated-password {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #666;
+    
+    code {
+      background: #f8f9fa;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: monospace;
+      color: #d63384;
+      margin-left: 4px;
+    }
+  }
+}
+
+/* Описание ролей */
+.role-descriptions {
+  margin-top: 8px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 4px;
+  border-left: 3px solid #007bff;
+  
+  .role-description {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 6px;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+    
+    strong {
+      color: #495057;
+    }
+  }
+}
+
+/* Валидационные сообщения */
+.validation-error {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #dc3545;
+  
+  div {
+    margin-top: 2px;
+  }
+}
+
+/* Кнопки формы */
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #f1f3f4;
+  
+  button {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .btn-submit {
+    background-color: #28a745;
+    color: white;
+    
+    &:hover:not(:disabled) {
+      background-color: #218838;
+    }
+    
+    &:disabled {
+      background-color: #6c757d;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+    
+    .loading {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      
+      &::after {
+        content: '';
+        width: 12px;
+        height: 12px;
+        border: 2px solid white;
+        border-top-color: transparent;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+    }
+  }
+  
+  .btn-cancel {
+    background-color: #6c757d;
+    color: white;
+    
+    &:hover:not(:disabled) {
+      background-color: #5a6268;
+    }
+    
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}
+
+/* ====================
+   СООБЩЕНИЯ
+   ==================== */
+.message {
+  padding: 12px 16px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  
+  &.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+  }
+  
+  &.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+  }
+}
+
+/* ====================
+   ТАБЛИЦА ПОЛЬЗОВАТЕЛЕЙ
+   ==================== */
+.table-container {
+  overflow-x: auto;
+  border-radius: 4px;
+  border: 1px solid #f1f3f4;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+
+  thead {
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+  }
+
+  th {
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 500;
+    color: #495057;
+    border-bottom: 1px solid #e9ecef;
+  }
+
+  .th-content {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .th-actions {
+    width: 80px;
+  }
+}
+
+/* Строки таблицы */
+.user-row {
+  border-bottom: 1px solid #f1f3f4;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #f8f9fa;
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  td {
+    padding: 12px;
+    vertical-align: middle;
+  }
+}
+
+/* Столбец имени */
+.td-name {
+  .user-name {
+    font-weight: 400;
+    color: #2c3e50;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* Столбец роли */
+.td-role {
+  .role-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 400;
+    background-color: #e3f2fd;
+    color: #1976d2;
+    border: 1px solid #bbdefb;
+    min-width: 60px;
+    text-align: center;
+  }
+}
+
+/* Столбец последнего входа */
+.td-last-login {
+  .last-login-info {
+    .last-login-time {
+      font-weight: 400;
+      color: #2c3e50;
+      font-size: 12.5px;
+    }
+  }
+
+  .never-logged-in {
+    display: flex;
+    align-items: center;
+    color: #999;
+  }
+
+  .never-text {
+    font-style: italic;
+    font-size: 12.5px;
+  }
+}
+
+/* Столбец действий */
+.td-actions {
+  width: 80px;
+}
+
+/* ====================
+   АНИМАЦИИ
+   ==================== */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ====================
+   АДАПТИВНОСТЬ
+   ==================== */
+@media (max-width: 768px) {
+  .users-container {
+    padding: 12px;
+    margin: 10px;
+    width: auto;
+  }
+
+  .users-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .users-header-right {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .users-stats {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .table-container {
+    margin: 0;
+    width: 100%;
+  }
+
+  .user-row {
+    td {
+      padding: 8px 10px;
+    }
+  }
+
+  .add-user-form {
+    padding: 16px;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+    
+    button {
+      width: 100%;
+    }
+  }
+}
+
+/* Для очень маленьких экранов */
+@media (max-width: 480px) {
+  .users-title {
+    font-size: 18px;
+  }
+
+  .stat-item {
+    font-size: 12px;
+  }
+
+  .users-table {
+    font-size: 12px;
+
+    th, td {
+      padding: 6px 8px;
+    }
+  }
+
+  .role-badge {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+
+  .last-login-time,
+  .never-text {
+    font-size: 11px;
+  }
+}

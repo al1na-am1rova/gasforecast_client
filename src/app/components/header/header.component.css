@@ -17,7 +17,15 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.logout-button-subtle {
+.buttons-container {
+  display: flex;
+  gap: 12px; 
+  justify-content: flex-end; 
+  align-items: center;
+  width: 100%;
+}
+
+.button-subtle {
   padding: 8px 16px;
   margin: 0px;
   background-color: #f8f9fa;
@@ -32,7 +40,7 @@
   transition: all 0.2s ease;
 }
 
-.logout-button-subtle:hover {
+.button-subtle:hover {
   background-color: #e9ecef;
   border-color: #dc3545;
   color: #dc3545;

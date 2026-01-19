@@ -3,9 +3,11 @@ import { SRV_URL } from '../../config';
 
 export const httpInterceptor: HttpInterceptorFn = (req, next) => {
   let headers = req.headers;
-  console.log(headers);
   
-  if (req.url.includes('Electric')) {
+  const publicUrls = ['/api/Account/login', '/api/Account/updatePassword'];
+  const isPublicUrl = publicUrls.some(url => req.url.includes(url));
+  
+  if (!isPublicUrl) {
     const token = sessionStorage.getItem('token');
     if (token) {
       headers = headers.append('Authorization', `Bearer ${token}`);

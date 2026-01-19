@@ -1,15 +1,119 @@
-<div  class="login-container" *ngIf="getLogin()">
- <div>
-  <p class = "text">Вы уже вошли в аккаунт с логином <strong>{{getLogin()}}</strong> </p>
-  <p class = "text">Вы уверены, что хотите выйти?</p>
-  <div class = "buttons-container">
-  <button class = "logout-button" type="submit" (click)="logOut()">Выход</button>
-  <button class = "cancel-button" type="submit" (click)="goMainPage()">Отмена</button>
-  </div>
- </div>
+<!-- Форма смены пароля при первом входе -->
+<div class="login-container" *ngIf="firstSession">
+  <h3>Смена пароля</h3>
+  <p class="text">
+    <strong>Добро пожаловать, {{getLogin()}}!</strong><br>
+    Это ваш первый вход в систему. Пожалуйста, установите новый пароль.
+  </p>
+  
+  <form (ngSubmit)="updatePassword()" #passwordForm="ngForm">
+    <div class="spacer">
+      <label for="newPassword">Новый пароль</label>
+      <div class="password-container">
+        <input 
+          [type]="showNewPassword ? 'text' : 'password'" 
+          id="newPassword" 
+          name="newPassword" 
+          placeholder="Введите новый пароль" 
+          [(ngModel)]="newPasswordData.newPassword"
+          required
+          minlength="6"
+          #newPasswordInput="ngModel">
+        
+        <button type="button" class="toggle-password" (click)="showNewPassword = !showNewPassword">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path *ngIf="!showNewPassword" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle *ngIf="!showNewPassword" cx="12" cy="12" r="3"></circle>
+            <path *ngIf="showNewPassword" d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+            <line *ngIf="showNewPassword" x1="1" y1="1" x2="23" y2="23"></line>
+          </svg>
+        </button>
+      </div>
+      
+      <div *ngIf="newPasswordInput.invalid && (newPasswordInput.dirty || newPasswordInput.touched)" 
+           class="validation-error">
+        <div *ngIf="newPasswordInput.errors?.['required']">
+          Поле обязательно для заполнения
+        </div>
+        <div *ngIf="newPasswordInput.errors?.['minlength']">
+          Минимум 6 символов
+        </div>
+      </div>
+      
+      <div class="password-hints">
+        <small>• Минимум 6 символов</small>
+        <small>• Рекомендуется использовать буквы, цифры и специальные символы</small>
+      </div>
+    </div>
+
+    <div class="spacer">
+      <label for="confirmPassword">Подтвердите пароль</label>
+      <div class="password-container">
+        <input 
+          [type]="showConfirmPassword ? 'text' : 'password'" 
+          id="confirmPassword" 
+          name="confirmPassword" 
+          placeholder="Повторите новый пароль" 
+          [(ngModel)]="newPasswordData.confirmPassword"
+          required
+          #confirmPasswordInput="ngModel">
+        
+        <button type="button" class="toggle-password" (click)="showConfirmPassword = !showConfirmPassword">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path *ngIf="!showConfirmPassword" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle *ngIf="!showConfirmPassword" cx="12" cy="12" r="3"></circle>
+            <path *ngIf="showConfirmPassword" d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+            <line *ngIf="showConfirmPassword" x1="1" y1="1" x2="23" y2="23"></line>
+          </svg>
+        </button>
+      </div>
+      
+      <div *ngIf="confirmPasswordInput.invalid && (confirmPasswordInput.dirty || confirmPasswordInput.touched)" 
+           class="validation-error">
+        <div *ngIf="confirmPasswordInput.errors?.['required']">
+          Поле обязательно для заполнения
+        </div>
+      </div>
+      
+      <div *ngIf="newPasswordData.newPassword && newPasswordData.confirmPassword && 
+                 newPasswordData.newPassword !== newPasswordData.confirmPassword" 
+           class="validation-error">
+        Пароли не совпадают
+      </div>
+    </div>
+
+    <div class="spacer">
+      <button 
+        type="submit" 
+        [disabled]="passwordForm.invalid || 
+                   newPasswordData.newPassword !== newPasswordData.confirmPassword ||
+                   isChangingPassword">
+        {{ isChangingPassword ? 'Смена пароля...' : 'Сменить пароль' }}
+      </button>
+    </div>
+
+    <div *ngIf="passwordChangeMessage" 
+         class="message" 
+         [class.error]="passwordChangeMessage.includes('Ошибка')">
+      {{ passwordChangeMessage }}
+    </div>
+  </form>
 </div>
 
-<div class="login-container" *ngIf="!getLogin()">
+<!-- Форма подтверждения выхода (если уже вошел) -->
+<div class="login-container" *ngIf="getLogin() && !firstSession">
+  <div>
+    <p class="text">Вы уже вошли в аккаунт с логином <strong>{{getLogin()}}</strong></p>
+    <p class="text">Вы уверены, что хотите выйти?</p>
+    <div class="buttons-container">
+      <button class="logout-button" type="submit" (click)="logOut()">Выход</button>
+      <button class="cancel-button" type="submit" (click)="goMainPage()">Отмена</button>
+    </div>
+  </div>
+</div>
+
+<!-- Форма входа (если не вошел и не первый вход) -->
+<div class="login-container" *ngIf="!getLogin() && !firstSession">
   <h3>Войдите в аккаунт</h3>
   <div>
     <div class="spacer">
