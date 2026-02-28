@@ -1,0 +1,198 @@
+<div class="units-table-container">
+  <div class="table-wrapper">
+    <div class="search-container">
+      <input type="text" 
+             [(ngModel)]="searchTermUnits"
+             (input)="filterUnits()"
+             placeholder="Поиск паспорта по типу электроагрегата..."
+             class="search-input">
+      <button *ngIf="searchTermUnits" 
+              (click)="clearSearchUnits()"
+              class="clear-search-btn"
+              title="Очистить поиск">
+        ×
+      </button>
+      <button type="button" class="btn-close units-table-close" (click)="closeTable()" title="Закрыть">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    
+    <div class="table-scroll-container">
+      <table class="units-table">
+        <thead>
+          <tr>
+            <th (click)="sortUnits('unitType')">
+              Тип агрегата {{ getSortArrow('unitType') }}
+            </th>
+            <th (click)="sortUnits('engineType')">
+              Тип двигателя {{ getSortArrow('engineType') }}
+            </th>
+            <th (click)="sortUnits('ratedPower')">
+              Ном. мощность (МВт) {{ getSortArrow('ratedPower') }}
+            </th>
+            <th (click)="sortUnits('standartPower')">
+              Станд. мощность (МВт) {{ getSortArrow('standartPower') }}
+            </th>
+            <th (click)="sortUnits('consumptionNorm')">
+              Расход газа (м³/ч) {{ getSortArrow('consumptionNorm') }}
+            </th>
+            <th *ngIf="userRole==='admin'">Действия</th>
+            <th *ngIf="userRole==='admin'">
+              <button type="button" class="add-button" (click)="openAddUnitForm()">
+                Добавить
+              </button>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let unit of filteredUnits">
+            <td>{{unit.unitType}}</td>
+            <td>{{unit.engineType}}</td>
+            <td>{{unit.ratedPower}}</td>
+            <td>{{unit.standartPower}}</td>
+            <td>{{unit.consumptionNorm}}</td>
+            <td *ngIf="userRole==='admin'" class="actions-cell">
+              <button (click)="editingUnit = unit; openAddUnitForm()"
+                      class="edit-icon"
+                      title="Редактировать агрегат">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+              </button>
+              <button (click)="$event.stopPropagation(); openDeleteConfirmation(unit, deleteUnit.bind(this))"
+                      class="delete-icon"
+                      title="Удалить агрегат">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14Z"/>
+                </svg>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Модальное окно для добавления/редактирования агрегата -->
+<div class="modal-overlay" *ngIf="showAddUnitForm" (click)="closeAddUnitForm()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3 *ngIf="!editingUnit">Добавление нового паспорта электроагрегата</h3>
+      <h3 *ngIf="editingUnit">Редактирование паспорта электроагрегата</h3>
+      <button class="close-button" (click)="closeAddUnitForm()">&times;</button>
+    </div>
+    
+    <form class="add-station-form" #unitForm="ngForm">
+      <div class="form-group">
+        <label for="unitType">Тип агрегата *</label>
+        <input type="text" id="unitType" 
+               [(ngModel)]="newUnit.unitType" 
+               name="unitType"
+               required
+               placeholder="Введите тип агрегата">
+      </div>
+
+      <div class="form-group">
+        <label for="engineType">Тип двигателя *</label>
+        <select id="engineType" 
+                [(ngModel)]="newUnit.engineType" 
+                name="engineType"
+                required>
+          <option value="">Выберите тип двигателя</option>
+          <option value="Газотурбинный">Газотурбинный</option>
+          <option value="Поршневой">Поршневой</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="ratedPower">Номинальная мощность (МВт) *</label>
+        <input type="number" id="ratedPower" 
+               [(ngModel)]="newUnit.ratedPower" 
+               #ratedPower="ngModel"
+               name="ratedPower"
+               required
+               min="0.1"
+               max="100000"
+               step="0.1"
+               placeholder="Введите номинальную мощность"
+               [ngClass]="{'invalid-input': ratedPower.invalid && ratedPower.touched}">
+        <div class="error-message" *ngIf="ratedPower.invalid && ratedPower.touched">
+          <span *ngIf="ratedPower.errors?.['required']">Введите номинальную мощность (МВт).</span>
+          <span *ngIf="ratedPower.errors?.['min']">Минимум 0.1</span>
+          <span *ngIf="ratedPower.errors?.['max']">Максимум 100000</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="standartPower">Стандартная мощность (МВт) *</label>
+        <input type="number" id="standartPower" 
+               [(ngModel)]="newUnit.standartPower" 
+               #standartPower="ngModel"
+               name="standartPower"
+               required
+               min="0.1"
+               max="100000"
+               step="0.1"
+               placeholder="Введите стандартную мощность"
+               [ngClass]="{'invalid-input': standartPower.invalid && standartPower.touched}">
+        <div class="error-message" *ngIf="standartPower.invalid && standartPower.touched">
+          <span *ngIf="standartPower.errors?.['required']">Введите стандартную мощность (МВт).</span>
+          <span *ngIf="standartPower.errors?.['min']">Минимум 0.1</span>
+          <span *ngIf="standartPower.errors?.['max']">Максимум 100000</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="consumptionNorm">Норма расхода газа (м³/ч) *</label>
+        <input type="number" id="consumptionNorm" 
+            [(ngModel)]="newUnit.consumptionNorm" 
+            #consumptionNorm="ngModel"
+            name="consumptionNorm"
+            required
+            min="0.1"
+            max="1000"
+            step="0.01"
+            placeholder="Введите норму расхода газа"
+            [ngClass]="{'invalid-input': consumptionNorm.invalid && consumptionNorm.touched}">
+        <div class="error-message" *ngIf="consumptionNorm.invalid && consumptionNorm.touched">
+          <span *ngIf="consumptionNorm.errors?.['required']">Введите норму расхода газа (м³/ч).</span>
+          <span *ngIf="consumptionNorm.errors?.['min']">Минимум 0.1</span>
+          <span *ngIf="consumptionNorm.errors?.['max']">Максимум 1000</span>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-cancel" (click)="closeAddUnitForm()">Отмена</button>
+        <button type="button" class="btn-submit" 
+                [disabled]="!unitForm.form.valid"
+                (click)="editingUnit ? editUnit() : addUnit()">
+                {{editingUnit ? 'Сохранить изменения' : 'Добавить паспорт' }}
+        </button>
+      </div>
+
+      <div *ngIf="uMsg" class="error-message" [class.error]="uMsg !== 'Success'">
+        {{uMsg}}
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Модальное окно подтверждения удаления -->
+<div class="modal-overlay" *ngIf="showDeleteConfirmation" (click)="closeDeleteConfirmation()">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Подтвердите удаление</h3>
+      <button class="close-button" (click)="closeDeleteConfirmation()">&times;</button>
+    </div>
+    <p class="modal-text">Вы действительно хотите удалить <strong>{{itemToDelete?.unitType}}</strong>?</p>
+    <div class="form-actions">
+      <button type="button" class="btn-cancel" (click)="closeDeleteConfirmation()">Отмена</button>
+      <button type="button" class="btn-submit" (click)="confirmDelete()">Удалить</button>
+    </div>
+  </div>
+</div>

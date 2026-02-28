@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AccountService } from '../../services/account.service/account.service';
-import {User} from  './userModel';
+import { User } from  './userModel';
 
 @Component({
   selector: 'app-admin-page',
@@ -14,7 +14,7 @@ import {User} from  './userModel';
 })
 export class AdminPage implements OnInit {
 
-  constructor(private router: Router , private account: AccountService){}
+  constructor(private router: Router , private account: AccountService) {}
   
   // Данные
   users: User[] = [];
@@ -31,6 +31,13 @@ export class AdminPage implements OnInit {
     password: '',
     role: 'user'
   };
+
+  // Переменные для модальных окон
+  showEditRoleModal = false;
+  showDeleteConfirmation = false;
+  selectedUserForEdit: User | null = null;
+  selectedUserForDelete: User | null = null;
+  selectedNewRole: string = '';
   
   ngOnInit(): void {
     this.checkAuth();
@@ -56,6 +63,7 @@ export class AdminPage implements OnInit {
           this.users = [];
         } else {
           this.users = result;
+          console.log('Загруженные пользователи:', this.users);
         }
       },
       error: (error) => {
@@ -77,7 +85,7 @@ export class AdminPage implements OnInit {
         if (response === 200 || response.status === 200) {
           this.showMessage('Пользователь успешно создан!', true);
           this.resetForm();
-          this.loadUsers(); // Обновляем список
+          this.loadUsers();
           this.showAddForm = false;
         } else {
           this.showMessage('Ошибка создания пользователя', false);
@@ -140,11 +148,106 @@ export class AdminPage implements OnInit {
     this.message = text;
     this.isSuccess = success;
     
-    // Автоматическое скрытие через 5 секунд
     if (success) {
       setTimeout(() => {
         this.message = '';
       }, 5000);
     }
+  }
+
+  // Метод для открытия модального окна редактирования
+  editUser(user: User) {
+    console.log('Редактирование пользователя:', user.role);
+    this.selectedUserForEdit = user;
+    this.selectedNewRole = user.role;
+    this.showEditRoleModal = true;
+  }
+
+  // Метод для открытия модального окна удаления
+  deleteUser(user: User) {
+    console.log('Удаление пользователя:', user);
+    this.selectedUserForDelete = user;
+    this.showDeleteConfirmation = true;
+  }
+
+  // Метод для подтверждения изменения роли
+  confirmRoleChange() {
+    if (this.selectedUserForEdit && this.selectedNewRole !== this.selectedUserForEdit.role) {
+      const userId = this.selectedUserForEdit.id; 
+
+      this.account.editAccount(userId, this.selectedNewRole).subscribe({
+        next: (status) => {
+          if (status === 200) {
+            alert('Роль пользователя успешно обновлена');
+            // Обновляем роль в массиве users
+            const index = this.users.findIndex(u => u.id === userId);
+            if (index !== -1) {
+              this.users[index].role = this.selectedNewRole;
+            }
+            this.closeEditModal();
+          } else if (status === 401) {
+            this.router.navigate(['/login']);
+          } else if (status === 404) {
+            alert('Пользователь не найден');
+            this.closeEditModal();
+          } else {
+            alert(`Ошибка при обновлении роли. Код: ${status}`);
+            this.closeEditModal();
+          }
+        },
+        error: (error) => {
+          console.error('Ошибка при обновлении роли:', error);
+          alert('Ошибка при обновлении роли. Попробуйте ещё раз.');
+          this.closeEditModal();
+        }
+      });
+    } else if (this.selectedUserForEdit && this.selectedNewRole === this.selectedUserForEdit.role) {
+      alert('Роль не изменилась');
+      this.closeEditModal();
+    }
+  }
+
+  // Метод для подтверждения удаления
+  confirmDelete() {
+    if (this.selectedUserForDelete) {
+      const userId = this.selectedUserForDelete.id; // Теперь точно знаем, что это id
+
+      this.account.deleteAccount(userId).subscribe({
+        next: (status) => {
+          if (status === 200) {
+            alert('Пользователь успешно удален');
+            // Удаляем пользователя из массива
+            this.users = this.users.filter(u => u.id !== userId);
+            this.closeDeleteConfirmation();
+          } else if (status === 401) {
+            this.router.navigate(['/login']);
+          } else if (status === 404) {
+            alert('Пользователь не найден');
+            this.closeDeleteConfirmation();
+          } else {
+            alert(`Ошибка при удалении пользователя. Код: ${status}`);
+            this.closeDeleteConfirmation();
+          }
+        },
+        error: (error) => {
+          console.error('Ошибка при удалении пользователя:', error);
+          alert('Ошибка при удалении пользователя. Попробуйте ещё раз.');
+          this.closeDeleteConfirmation();
+        }
+      });
+    }
+  }
+
+  // Метод для закрытия модального окна редактирования
+  closeEditModal() {
+    this.showEditRoleModal = false;
+    this.selectedUserForEdit = null;
+    this.selectedNewRole = '';
+  }
+
+  // Метод для закрытия модального окна удаления
+  closeDeleteConfirmation() {
+    this.showDeleteConfirmation = false;
+    this.selectedUserForDelete = null;
   }
 }

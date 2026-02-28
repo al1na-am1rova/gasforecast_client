@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams} from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-import { Station } from '../../components/stationsUnits/stationsUnitsModels';
+import { Station } from '../../components/stations/stationsModels';
 
 export interface CalculationRequest {
   stationId: number;

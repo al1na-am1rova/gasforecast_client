@@ -46,7 +46,7 @@ export class Login {
   }
 
   goMainPage() {
-    this.router.navigate(["/stationsUnits"]);
+    this.router.navigate(["/stations"]);
   }
 
   // Метод для проверки временного пароля
@@ -77,7 +77,7 @@ export class Login {
       sessionStorage.setItem('username', this.loginData.username);
       this.msg = 'Это ваш первый вход. Пожалуйста, смените пароль.';
     } else {
-      this.router.navigate(['/stationsUnits']);
+      this.router.navigate(['/stations']);
     }
   }
 
@@ -131,7 +131,7 @@ export class Login {
         if (status === 200) {
           this.msg = 'Пароль успешно изменен!';
           this.firstSession = false;
-           this.router.navigate(['/stationsUnits']);
+           this.router.navigate(['/stations']);
           
         } else {
           this.msg = `Ошибка смены пароля (код: ${status})`;

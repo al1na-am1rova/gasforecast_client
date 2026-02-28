@@ -14,7 +14,7 @@ constructor(private router: Router){}
 
 click() {
   if (sessionStorage.getItem("token")){
-    this.router.navigate(['/stationsUnits'])
+    this.router.navigate(['/stations'])
   }
 }
 

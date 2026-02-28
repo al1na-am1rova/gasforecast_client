@@ -87,4 +87,34 @@ export class AccountService {
       catchError((error: HttpErrorResponse) => of(error.status))
     )
   }
+
+  public deleteAccount(id:number): Observable<number> {
+  return this.http.delete<any>(`${this.apiUrl}/Account/delete/${id}`, { observe: 'response' })
+      .pipe(
+        map(res => {
+          return res.status;
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return of(error.status);
+        })
+      );
+    }
+
+  public editAccount(id: number, newRole: string): Observable<number> {
+  const params = new HttpParams().set('newRole', newRole);
+  return this.http.put<any>(`${this.apiUrl}/Account/changeRole/${id}`, null, { 
+    params: params,  // Передаем параметры
+    observe: 'response' 
+  })
+  .pipe(
+    map(res => {
+      console.log('Ответ сервера:', res);
+      return res.status;
+    }),
+    catchError((error: HttpErrorResponse) => {
+      console.error('Ошибка:', error);
+      return of(error.status);
+    })
+  );
+}
 }
