@@ -15,10 +15,10 @@
   border-bottom: 1px solid #e1e5e9;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
   min-height: 57px;
-  height:auto;
+  height: auto;
   flex-shrink: 0;
   z-index: 10;
-  flex-wrap:wrap;
+  flex-wrap: wrap;
   padding: 2px 0;
   justify-content: flex-start;
 }
@@ -63,7 +63,6 @@
   padding: 10px;
 }
 
-
 /* Кнопка таблицы в верхней панели */
 .table-view-button-top {
   box-shadow: 1px 0 5px rgba(0, 0, 0, 0.08);
@@ -88,7 +87,6 @@
   margin-left: auto;
   margin-right: 15px;
 }
-
 
 .table-view-button-top:hover {
   background: #f8fbff;
@@ -115,7 +113,7 @@
   display: flex;
   gap: 5px;
   flex: 1;
-  overflow: hidden; 
+  overflow: hidden;
   height: 100%;
 }
 
@@ -135,7 +133,7 @@
 /* Контент вкладок */
 .tab-content {
   flex: 1;
-  overflow: hidden; 
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 }
@@ -144,8 +142,8 @@
   position: relative;
   margin-bottom: 5px;
   margin-top: 5px;
-  margin-left:auto;
-  margin-right:auto;
+  margin-left: auto;
+  margin-right: auto;
   position: relative;
   width: 95%;
 }
@@ -164,22 +162,6 @@
 
 .search-input:focus {
   border-color: #007bff;
-}
-
-.search-container.with-icon {
-  position: relative;
-}
-
-.search-container.with-icon svg {
-  position: absolute;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #666;
-}
-
-.search-container.with-icon .search-input {
-  padding-left: 40px;
 }
 
 .clear-search-btn {
@@ -204,26 +186,19 @@
   color: #333;
 }
 
-.no-results {
-  text-align: center;
-  padding: 20px;
-  color: #666;
-  font-style: italic;
-}
-
 .components-tree {
   padding: 0;
   height: 100%;
-  overflow-y: auto; 
+  overflow-y: auto;
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
 }
 
 .tree {
   list-style: none;
   padding: 0;
   margin: 0;
-  flex: 1; 
+  flex: 1;
 }
 
 .tree-item {
@@ -342,6 +317,7 @@
   transform: translateY(-1px);
   box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
 }
+
 /* Стили для скроллбара левой панели */
 .sidebar-content::-webkit-scrollbar {
   width: 6px;
@@ -400,31 +376,6 @@
   background: #f8f9fa;
 }
 
-.btn-close {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 4px;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: auto
-}
-
-.btn-close:hover {
-  background: #f8f9fa;
-}
-
-.btn-close svg {
-  color: #6c757d;
-}
-
-.btn-close:hover svg {
-  color: #dc3545;
-}
-
 .table-wrapper {
   flex: 1;
   background: white;
@@ -434,7 +385,7 @@
   border: 1px solid #e1e5e9;
   display: flex;
   flex-direction: column;
-  max-width:100%;
+  max-width: 100%;
 }
 
 /* Контейнер для скролла таблицы */
@@ -494,19 +445,6 @@
   background: #f8f9fa;
 }
 
-.actions-cell {
-  display: flex;
-  align-items: left;
-  justify-content: left;
-}
-
-.edit-icon,
-.delete-icon {
-  width: 32px;
-  height: 32px;
-  padding: 6px;
-}
-
 .empty-state {
   padding: 40px;
   text-align: center;
@@ -515,11 +453,23 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
 }
 
 .empty-state p {
-  margin: 0;
+  margin: 10px 0 5px;
   font-size: 16px;
+}
+
+.empty-state .hint {
+  font-size: 14px;
+  color: #999;
+  font-style: italic;
+}
+
+.empty-state svg {
+  margin-bottom: 20px;
+  opacity: 0.5;
 }
 
 /* Фиксированные колонки для лучшего UX */
@@ -561,21 +511,26 @@
 /* Сворачиваемая правая панель */
 .content-panel {
   width: 300px;
-  height: 400px;
+  height: fit-content;
+  max-height: 400px;
   background: #ffffff;
   border-left: 1px solid #e1e5e9;
-  box-shadow: -1px 0 5px rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid #e1e5e9;
+  border-radius: 0 0 0 4px;
+  box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   display: flex;
-  z-index: 5;
-  position:absolute;
+  z-index: 100;
+  position: absolute;
   right: 0;
-  top: 6px;
+  top: 0;
   transform: translateX(0);
 }
 
 .content-panel.collapsed {
   width: 0px;
+  border-left: none;
+  border-bottom: none;
 }
 
 /* Кнопка сворачивания */
@@ -586,13 +541,14 @@
   width: 30px;
   height: 40px;
   background: #2980b9;
-  border-radius: 4px 4px 4px 4px;
+  border-radius: 4px 0 0 4px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 20;
-  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.15);
+  z-index: 101;
+  box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.15);
+  border-right: none;
 }
 
 .panel-toggle:hover {
@@ -601,10 +557,21 @@
   left: -34px;
 }
 
+/* Буква i - всегда в таком виде */
 .toggle-icon {
   color: white;
   font-weight: bold;
-  font-size: 18px;
+  font-size: 20px;
+  font-family: 'Times New Roman', serif;
+  font-style: italic;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  transform: none !important;
+  transition: none;
 }
 
 /* Содержимое панели */
@@ -614,6 +581,25 @@
   flex-direction: column;
   overflow-y: auto;
   padding: 0;
+  max-height: 400px;
+}
+
+/* Для красивого скролла внутри панели */
+.panel-content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.panel-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.panel-content::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 2px;
+}
+
+.panel-content::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
 }
 
 .details-container {
@@ -696,6 +682,56 @@
   max-width: 120px;
 }
 
+/* ===== СТИЛИ ДЛЯ ВКЛАДОК ===== */
+.data-container,
+.methodology-container {
+  height: 100%;
+  position: relative;
+  background: #f8f9fa;
+  padding-top: 10px;
+}
+
+/* Стили для крестиков вкладок */
+.data-close,
+.methodology-close {
+  position: absolute;
+  top: 25px;
+  right: 0;
+  z-index: 99;
+  background: white;
+  border: 1px solid #e1e5e9;
+  border-radius: 4px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 0;
+}
+
+.data-close svg,
+.methodology-close svg {
+  width: 18px;
+  height: 18px;
+  color: #6c757d;
+  transition: color 0.2s ease;
+  stroke-width: 2.2;
+}
+
+.data-close:hover,
+.methodology-close:hover {
+  background: #f8f9fa;
+  border-color: #dc3545;
+}
+
+.data-close:hover svg,
+.methodology-close:hover svg {
+  color: #dc3545;
+}
+
 /* ===== МОДАЛЬНЫЕ ОКНА ===== */
 .modal-overlay {
   position: fixed;
@@ -719,7 +755,7 @@
   max-width: 500px;
   max-height: 90vh;
   overflow-y: auto;
-  padding: 20px; 
+  padding: 20px;
 }
 
 .modal-header {
@@ -739,11 +775,11 @@
 
 .modal-text {
   margin: 0;
-  padding-top:10px;
-  padding-left:20px;
+  padding-top: 10px;
+  padding-left: 20px;
   font-size: 14px;
   color: #555;
-  flex-grow: 1
+  flex-grow: 1;
 }
 
 .error-message {
@@ -803,16 +839,12 @@
   box-shadow: 0 0 0 2px rgba(41, 128, 185, 0.1);
 }
 
-.form-group.ng-invalid.ng-touched {
-  border-color: #e74c3c;
-  background-color: #fff6f6;
-}
-
 .invalid-input {
   border: 1px solid;
   border-color: #e74c3c;
   background-color: #fff6f6;
 }
+
 .form-actions {
   display: flex;
   justify-content: flex-end;
@@ -861,116 +893,18 @@
   transform: none;
 }
 
-.loading-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(255, 255, 255, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
-
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #3498db;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-/* Добавьте в конец файла stationsUnits.css */
-
-/* Стили для контейнера методики */
-.methodology-container {
-  height: 100%;
-  position: relative; /* Для позиционирования крестика */
-  background: #f8f9fa;
-}
-
-/* Крестик для закрытия */
-.methodology-close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 10;
-  background: white;
-  border: 1px solid #e1e5e9;
-  border-radius: 4px;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.methodology-close:hover {
-  background: #f8f9fa;
-  border-color: #dc3545;
-}
-
-.methodology-close:hover svg {
-  color: #dc3545;
-}
-
-.methodology-close svg {
-  color: #6c757d;
-  transition: color 0.2s ease;
-}
-
-/* Стили для пустого состояния */
-.empty-state {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  color: #6c757d;
-  padding: 40px;
-}
-
-.empty-state p {
-  margin: 10px 0 5px;
-  font-size: 18px;
-  font-weight: 500;
-}
-
-.empty-state .hint {
-  font-size: 14px;
-  color: #999;
-  font-style: italic;
-}
-
-.empty-state svg {
-  margin-bottom: 20px;
-  opacity: 0.5;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
 /* ===== АДАПТИВНОСТЬ ===== */
 @media (max-width: 768px) {
   .top-panel {
     flex-direction: column;
     height: auto;
   }
-  
+
   .sidebar-header {
     width: 100%;
     border-right: none;
   }
-  
+
   .table-view-button-top {
     width: 100%;
     border-left: none;
@@ -978,30 +912,51 @@
     justify-content: center;
     padding: 12px 20px;
   }
-  
+
   .main-content-wrapper {
     flex-direction: column;
   }
-  
+
   .sidebar-content {
     width: 100%;
     height: 250px;
   }
-  
+
   .main-content {
     height: calc(100vh - 250px - 114px);
   }
-  
-  .content-panel {
+
+  .modal-content {
+    width: 95%;
+    margin: 20px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .btn-cancel, .btn-submit {
     width: 100%;
-    height: 60px;
-    border-left: none;
-    border-top: 1px solid #e1e5e9;
+  }
+
+  .units-table-container {
+    padding: 15px;
+  }
+
+  .data-close,
+  .methodology-close {
+    right: 10px;
+    top: 12px;
   }
   
-  .content-panel.collapsed {
+  .content-panel {
+    top: auto;
+    bottom: 0;
     width: 100%;
-    height: 40px;
+    height: auto;
+    border-left: none;
+    border-top: 1px solid #e1e5e9;
+    border-radius: 4px 4px 0 0;
   }
   
   .panel-toggle {
@@ -1010,31 +965,16 @@
     transform: translateX(-50%);
     width: 60px;
     height: 20px;
-    border-radius: 0 0 8px 8px;
+    border-radius: 8px 8px 0 0;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .panel-toggle:hover {
+    width: 64px;
+    left: calc(50% - 2px);
   }
   
   .toggle-icon {
-    transform: rotate(90deg);
-  }
-  
-  .toggle-icon.collapsed {
-    transform: rotate(-90deg);
-  }
-
-  .modal-content {
-    width: 95%;
-    margin: 20px;
-  }
-  
-  .form-actions {
-    flex-direction: column;
-  }
-  
-  .btn-cancel, .btn-submit {
-    width: 100%;
-  }
-  
-  .units-table-container {
-    padding: 15px;
+    font-size: 16px;
   }
 }

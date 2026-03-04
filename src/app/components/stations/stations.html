@@ -4,7 +4,7 @@
     <!-- Левая панель -->
     <div class="sidebar">
       <div class="sidebar-header">
-        <div class="header-tabs"> 
+        <div class="header-tabs">
           <button type="button" class="stations-list-button" (click)="selectedStation = null; showUnitsTable = false;">
             Электростанции
           </button>
@@ -12,9 +12,19 @@
             + Добавить
           </button>
         </div>
-      </div>      
+      </div>
     </div>
 
+    <!-- Новая вкладка Данные -->
+    <button class="table-view-button-top" [class.active]="showData === true" (click)="openData()" title="Данные">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="21" y1="9" x2="3" y2="9"></line>
+        <line x1="21" y1="15" x2="3" y2="15"></line>
+        <line x1="12" y1="3" x2="12" y2="21"></line>
+      </svg>
+      <span>Данные</span>
+    </button>
 
     <button class="table-view-button-top" [class.active]="showMethodology === true" (click)="openMethodology()" title="Расчет по методике">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -23,22 +33,21 @@
       </svg>
       <span>Расчет по методике</span>
     </button>
-       <button class="table-view-button-top" [class.active]="showMethodology2 === true" (click)="openMethodology2()" title="Прогнозирование">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <!-- Линия тренда (растущий график) -->
-          <polyline points="22 20 2 20 2 4" />
-          <polyline points="18 8 14 12 10 8 6 12" />
-          <!-- Точки на графике -->
-          <circle cx="6" cy="12" r="1.5" fill="currentColor" stroke="none" />
-          <circle cx="10" cy="8" r="1.5" fill="currentColor" stroke="none" />
-          <circle cx="14" cy="12" r="1.5" fill="currentColor" stroke="none" />
-          <circle cx="18" cy="8" r="1.5" fill="currentColor" stroke="none" />
-          <!-- Стрелка прогноза (пунктирная линия) -->
-          <line x1="18" y1="8" x2="22" y2="4" stroke-dasharray="2 2" />
-          <polygon points="22,4 20,6 22,8 24,6" transform="rotate(45 22 4)" />
-        </svg>
-        <span>Метод 2</span>
+
+    <button class="table-view-button-top" [class.active]="showMethodology2 === true" (click)="openMethodology2()" title="Прогнозирование">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="22 20 2 20 2 4" />
+        <polyline points="18 8 14 12 10 8 6 12" />
+        <circle cx="6" cy="12" r="1.5" fill="currentColor" stroke="none" />
+        <circle cx="10" cy="8" r="1.5" fill="currentColor" stroke="none" />
+        <circle cx="14" cy="12" r="1.5" fill="currentColor" stroke="none" />
+        <circle cx="18" cy="8" r="1.5" fill="currentColor" stroke="none" />
+        <line x1="18" y1="8" x2="22" y2="4" stroke-dasharray="2 2" />
+        <polygon points="22,4 20,6 22,8 24,6" transform="rotate(45 22 4)" />
+      </svg>
+      <span>Метод 2</span>
     </button>
+
     <button class="table-view-button-top" [class.active]="showUnitsTable === true" (click)="openUnitsTable()" title="Открыть таблицу агрегатов">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
@@ -68,7 +77,7 @@
           ×
         </button>
       </div>
-      
+
       <!-- Контент вкладок -->
       <div class="tab-content">
         <div class="components-tree">
@@ -117,66 +126,88 @@
         (navigateToLogin)="onNavigateToLogin()">
       </app-units-table>
 
+      <!-- Вкладка Данные -->
+      <div *ngIf="showData" class="data-container">
+        <!-- Крестик для закрытия вкладки -->
+        <button class="data-close" (click)="closeData()" title="Закрыть">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+
+        <!-- Если выбрана станция, показываем данные -->
+        <app-data *ngIf="selectedStation" [selectedStationId]="selectedStationId"></app-data>
+
+        <!-- Если станция не выбрана, показываем сообщение -->
+        <div *ngIf="!selectedStation" class="empty-state">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="21" y1="9" x2="3" y2="9"></line>
+            <line x1="21" y1="15" x2="3" y2="15"></line>
+            <line x1="12" y1="3" x2="12" y2="21"></line>
+          </svg>
+          <p>Выберите электростанцию из списка слева</p>
+          <p class="hint">Для просмотра данных необходимо выбрать станцию</p>
+        </div>
+      </div>
+
       <!-- Калькулятор для вкладки "Расчет по методике" -->
       <div *ngIf="showMethodology" class="methodology-container">
-        <!-- Крестик справа -->
-        <button type="button" class="btn-close methodology-close" (click)="closeMethodology()" title="Закрыть">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <!-- Крестик для закрытия вкладки -->
+        <button class="methodology-close" (click)="closeMethodology()" title="Закрыть">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
         </button>
-  
-      <!-- Если выбрана станция, показываем калькулятор -->
-      <app-calculator *ngIf="selectedStation" [selectedStationId]="selectedStationId"></app-calculator>
-  
-      <!-- Если станция не выбрана, показываем сообщение -->
-      <div *ngIf="!selectedStation" class="empty-state">
-        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1">
-          <path d="M12 2v4M12 22v-4M4 12H2h2M20 12h2-2M5.64 5.64l-1.41 1.41 1.41-1.41M18.36 18.36l1.41-1.41-1.41 1.41M5.64 18.36l1.41 1.41-1.41-1.41M18.36 5.64l-1.41-1.41 1.41 1.41"/>
-          <circle cx="12" cy="12" r="3"/>
-        </svg>
-        <p>Выберите электростанцию из списка слева</p>
-        <p class="hint">Для выполнения расчета необходимо выбрать станцию</p>
-      </div>
-    </div>
 
-     <!-- метод 2-->
+        <!-- Если выбрана станция, показываем калькулятор -->
+        <app-calculator *ngIf="selectedStation" [selectedStationId]="selectedStationId"></app-calculator>
+
+        <!-- Если станция не выбрана, показываем сообщение -->
+        <div *ngIf="!selectedStation" class="empty-state">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1">
+            <path d="M12 2v4M12 22v-4M4 12H2h2M20 12h2-2M5.64 5.64l-1.41 1.41 1.41-1.41M18.36 18.36l1.41-1.41-1.41 1.41M5.64 18.36l1.41 1.41-1.41-1.41M18.36 5.64l-1.41-1.41 1.41 1.41"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+          <p>Выберите электростанцию из списка слева</p>
+          <p class="hint">Для выполнения расчета необходимо выбрать станцию</p>
+        </div>
+      </div>
+
+      <!-- метод 2-->
       <div *ngIf="showMethodology2" class="methodology-container">
-        <!-- Крестик справа -->
-        <button type="button" class="btn-close methodology-close" (click)="closeMethodology2()" title="Закрыть">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <!-- Крестик для закрытия вкладки -->
+        <button class="methodology-close" (click)="closeMethodology2()" title="Закрыть">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
         </button>
-  
-  
-      <!-- Если станция не выбрана, показываем сообщение -->
-      <div *ngIf="!selectedStation" class="empty-state">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <!-- Линия тренда (растущий график) -->
-          <polyline points="22 20 2 20 2 4" />
-          <polyline points="18 8 14 12 10 8 6 12" />
-          <!-- Точки на графике -->
-          <circle cx="6" cy="12" r="1.5" fill="currentColor" stroke="none" />
-          <circle cx="10" cy="8" r="1.5" fill="currentColor" stroke="none" />
-          <circle cx="14" cy="12" r="1.5" fill="currentColor" stroke="none" />
-          <circle cx="18" cy="8" r="1.5" fill="currentColor" stroke="none" />
-          <!-- Стрелка прогноза (пунктирная линия) -->
-          <line x1="18" y1="8" x2="22" y2="4" stroke-dasharray="2 2" />
-          <polygon points="22,4 20,6 22,8 24,6" transform="rotate(45 22 4)" />
-        </svg>
-        <p>Выберите электростанцию из списка слева</p>
-        <p class="hint">Для выполнения прогнозна необходимо выбрать станцию</p>
+
+        <!-- Если станция не выбрана, показываем сообщение -->
+        <div *ngIf="!selectedStation" class="empty-state">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1">
+            <polyline points="22 20 2 20 2 4" />
+            <polyline points="18 8 14 12 10 8 6 12" />
+            <circle cx="6" cy="12" r="1.5" fill="currentColor" stroke="none" />
+            <circle cx="10" cy="8" r="1.5" fill="currentColor" stroke="none" />
+            <circle cx="14" cy="12" r="1.5" fill="currentColor" stroke="none" />
+            <circle cx="18" cy="8" r="1.5" fill="currentColor" stroke="none" />
+            <line x1="18" y1="8" x2="22" y2="4" stroke-dasharray="2 2" />
+            <polygon points="22,4 20,6 22,8 24,6" transform="rotate(45 22 4)" />
+          </svg>
+          <p>Выберите электростанцию из списка слева</p>
+          <p class="hint">Для выполнения прогноза необходимо выбрать станцию</p>
+        </div>
       </div>
-    </div>
 
       <!-- Сворачиваемая правая панель с информацией о станции -->
-      <div class="content-panel" *ngIf="selectedStation && !showUnitsTable" [class.collapsed]="isPanelCollapsed">
+      <div class="content-panel" *ngIf="selectedStation" [class.collapsed]="isPanelCollapsed">
         <!-- Кнопка сворачивания -->
         <div class="panel-toggle" (click)="togglePanel()">
-          <span class="toggle-icon" [class.collapsed]="isPanelCollapsed">i</span>
+          <span class="toggle-icon">i</span>
         </div>
 
         <!-- Содержимое панели -->
@@ -185,7 +216,7 @@
             <div class="details-header">
               <h2>{{selectedStation.name}}</h2>
             </div>
-            
+
             <div class="info-section">
               <h3>Основные характеристики</h3>
               <div class="properties-list compact">
@@ -209,92 +240,92 @@
     </div>
   </div>
 
-<!-- Модальное окно для добавления/редактирования станции -->
-<div class="modal-overlay" *ngIf="showAddStationForm" (click)="closeAddStationForm()">
-  <div class="modal-content" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h3 *ngIf="!isStationEditing">Добавление новой электростанции</h3>
-      <h3 *ngIf="isStationEditing">Редактирование электростанции</h3>
-      <button class="close-button" (click)="closeAddStationForm()">&times;</button>
-    </div>
-    
-    <form class="add-station-form" #stationForm="ngForm">
-      <div class="form-group">
-        <label for="stationName">Название станции *</label>
-        <input type="text" id="stationName" 
-               [(ngModel)]="newStation.name" 
-               name="stationName"
-               required
-               placeholder="Введите название">
+  <!-- Модальное окно для добавления/редактирования станции -->
+  <div class="modal-overlay" *ngIf="showAddStationForm" (click)="closeAddStationForm()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 *ngIf="!isStationEditing">Добавление новой электростанции</h3>
+        <h3 *ngIf="isStationEditing">Редактирование электростанции</h3>
+        <button class="close-button" (click)="closeAddStationForm()">&times;</button>
       </div>
 
-      <div class="form-group">
-        <label for="unitType">Тип агрегатов *</label>
-        <select id="unitType" 
-                [(ngModel)]="newStation.unitType" 
-                name="unitType"
-                required>
-          <option value="">Выберите тип агрегатов</option>
-          <option *ngFor="let unit of units" [value]="unit.unitType">
-            {{unit.unitType}}
-          </option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="activeUnitsCount">Количество агрегатов *</label>
-        <input type="number" id="activeUnitsCount" 
-               [(ngModel)]="newStation.activeUnitsCount" 
-               #activeUnitsCount="ngModel"
-               name="activeUnitsCount"
-               required
-               min="1"
-               max="20"
-               placeholder="Введите количество"
-               [ngClass]="{'invalid-input': activeUnitsCount.invalid && activeUnitsCount.touched}">
-        <div class="error-message" *ngIf="activeUnitsCount.invalid && activeUnitsCount.touched">
-          <span *ngIf="activeUnitsCount.errors?.['required']">Введите количество активных агрегатов.</span>
-          <span *ngIf="activeUnitsCount.errors?.['min']">Минимум 1</span>
-          <span *ngIf="activeUnitsCount.errors?.['max']">Максимум 20</span>
+      <form class="add-station-form" #stationForm="ngForm">
+        <div class="form-group">
+          <label for="stationName">Название станции *</label>
+          <input type="text" id="stationName" 
+                 [(ngModel)]="newStation.name" 
+                 name="stationName"
+                 required
+                 placeholder="Введите название">
         </div>
-      </div>
 
-      <div class="form-group">
-        <label for="launchDate">Дата запуска *</label>
-        <input type="date" id="launchDate" 
-               [(ngModel)]="newStation.launchDate" 
-               name="launchDate"
-               required
-               [max]="today">
-      </div>
+        <div class="form-group">
+          <label for="unitType">Тип агрегатов *</label>
+          <select id="unitType" 
+                  [(ngModel)]="newStation.unitType" 
+                  name="unitType"
+                  required>
+            <option value="">Выберите тип агрегатов</option>
+            <option *ngFor="let unit of units" [value]="unit.unitType">
+              {{unit.unitType}}
+            </option>
+          </select>
+        </div>
 
+        <div class="form-group">
+          <label for="activeUnitsCount">Количество агрегатов *</label>
+          <input type="number" id="activeUnitsCount" 
+                 [(ngModel)]="newStation.activeUnitsCount" 
+                 #activeUnitsCount="ngModel"
+                 name="activeUnitsCount"
+                 required
+                 min="1"
+                 max="20"
+                 placeholder="Введите количество"
+                 [ngClass]="{'invalid-input': activeUnitsCount.invalid && activeUnitsCount.touched}">
+          <div class="error-message" *ngIf="activeUnitsCount.invalid && activeUnitsCount.touched">
+            <span *ngIf="activeUnitsCount.errors?.['required']">Введите количество активных агрегатов.</span>
+            <span *ngIf="activeUnitsCount.errors?.['min']">Минимум 1</span>
+            <span *ngIf="activeUnitsCount.errors?.['max']">Максимум 20</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="launchDate">Дата запуска *</label>
+          <input type="date" id="launchDate" 
+                 [(ngModel)]="newStation.launchDate" 
+                 name="launchDate"
+                 required
+                 [max]="today">
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" (click)="closeAddStationForm()">Отмена</button>
+          <button type="button" class="btn-submit" 
+                  [disabled]="!stationForm.form.valid"
+                  (click)="isStationEditing ? editStation() : addStation()">
+                  {{ isStationEditing ? 'Сохранить изменения' : 'Добавить станцию' }}
+          </button>
+        </div>
+
+        <div *ngIf="stMsg" class="error-message" [class.error]="stMsg !== 'Success'">
+          {{stMsg}}
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Модальное окно подтверждения удаления -->
+  <div class="modal-overlay" *ngIf="showDeleteConfirmation" (click)="closeDeleteConfirmation()">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Подтвердите удаление</h3>
+        <button class="close-button" (click)="closeDeleteConfirmation()">&times;</button>
+      </div>
+      <p class="modal-text">Вы действительно хотите удалить <strong>{{itemToDelete?.name || itemToDelete?.unitType}}</strong>?</p>
       <div class="form-actions">
-        <button type="button" class="btn-cancel" (click)="closeAddStationForm()">Отмена</button>
-        <button type="button" class="btn-submit" 
-                [disabled]="!stationForm.form.valid"
-                (click)="isStationEditing ? editStation() : addStation()">
-                {{ isStationEditing ? 'Сохранить изменения' : 'Добавить станцию' }}
-        </button>
+        <button type="button" class="btn-cancel" (click)="closeDeleteConfirmation()">Отмена</button>
+        <button type="button" class="btn-submit" (click)="confirmDelete()">Удалить</button>
       </div>
-      
-      <div *ngIf="stMsg" class="error-message" [class.error]="stMsg !== 'Success'">
-        {{stMsg}}
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- Модальное окно подтверждения удаления -->
-<div class="modal-overlay" *ngIf="showDeleteConfirmation" (click)="closeDeleteConfirmation()">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3>Подтвердите удаление</h3>
-      <button class="close-button" (click)="closeDeleteConfirmation()">&times;</button>
-    </div>
-    <p class="modal-text">Вы действительно хотите удалить <strong>{{itemToDelete?.name || itemToDelete?.unitType}}</strong>?</p>
-    <div class="form-actions">
-      <button type="button" class="btn-cancel" (click)="closeDeleteConfirmation()">Отмена</button>
-      <button type="button" class="btn-submit" (click)="confirmDelete()">Удалить</button>
     </div>
   </div>
-</div>

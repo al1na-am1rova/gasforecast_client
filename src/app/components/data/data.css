@@ -1,0 +1,570 @@
+.data-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #f8f9fa;
+  padding: 16px 20px 20px 20px;
+  position: relative;
+}
+
+.data-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  margin-right: 30px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.data-header h3 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.btn-add, .btn-excel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-add {
+  background: #2980b9;
+  color: white;
+}
+
+.btn-add:hover {
+  background: #2573a7;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(41, 128, 185, 0.3);
+}
+
+.btn-excel {
+  background: #27ae60;
+  color: white;
+}
+
+.btn-excel:hover {
+  background: #229954;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3);
+}
+
+.btn-add svg, .btn-excel svg {
+  color: white;
+  width: 16px;
+  height: 16px;
+}
+
+/* Таблица */
+.table-wrapper {
+  flex: 1;
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  border: 1px solid #e1e5e9;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: auto;
+  margin-right:30px;
+}
+
+.table-scroll-container {
+  flex: 1;
+  overflow: auto;
+  position: relative;
+  max-height: 100%;
+}
+
+/* Стили для скроллбара */
+.table-scroll-container::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.table-scroll-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.table-scroll-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.table-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.data-table th {
+  background: #f8f9fa;
+  padding: 10px 16px;
+  text-align: left;
+  font-weight: 600;
+  color: #2c3e50;
+  border-bottom: 1px solid #e1e5e9;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.data-table td {
+  padding: 10px 16px;
+  border-bottom: 1px solid #e1e5e9;
+  color: #5f6368;
+}
+
+.data-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.value-cell {
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+/* Ячейка с действиями */
+.actions-cell {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.edit-icon, .delete-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 3px;
+  transition: all 0.2s ease;
+  opacity: 0.6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+}
+
+.edit-icon:hover, .delete-icon:hover {
+  background: #f8f9fa;
+  opacity: 1;
+  border: 1px solid #e9ecef;
+}
+
+.edit-icon svg, .delete-icon svg {
+  color: #6c757d;
+  width: 14px;
+  height: 14px;
+}
+
+.edit-icon:hover svg {
+  color: #007bff;
+}
+
+.delete-icon:hover svg {
+  color: #dc3545;
+}
+
+/* Пустое сообщение в таблице */
+.empty-table-message {
+  text-align: center;
+  padding: 32px !important;
+  color: #6c757d;
+  font-style: italic;
+}
+
+/* Модальное окно */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.close-button:hover {
+  color: #333;
+  background: #f8f9fa;
+}
+
+/* Excel модальное окно */
+.excel-modal-body {
+  padding: 20px;
+}
+
+.modal-description {
+  margin: 0 0 15px 0;
+  color: #666;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.format-list {
+  background: #f8f9fa;
+  padding: 15px 30px;
+  border-radius: 4px;
+  margin: 0 0 20px 0;
+  color: #666;
+  font-size: 13px;
+}
+
+.format-list li {
+  margin-bottom: 5px;
+}
+
+.format-list li:last-child {
+  margin-bottom: 0;
+}
+
+.file-upload-area {
+  border: 2px dashed #c1c1c1;
+  border-radius: 8px;
+  padding: 30px;
+  text-align: center;
+  background: #f8f9fa;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.file-upload-area.drag-over {
+  border-color: #2980b9;
+  background: #e3f2fd;
+}
+
+.file-upload-area svg {
+  margin-bottom: 15px;
+  width: 48px;
+  height: 48px;
+}
+
+.upload-text {
+  margin: 0 0 5px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.upload-text a {
+  color: #2980b9;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.upload-text a:hover {
+  text-decoration: underline;
+}
+
+.file-hint {
+  margin: 0;
+  color: #27ae60;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.import-preview {
+  margin: 20px 0;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+
+.import-preview h4 {
+  margin: 0 0 10px 0;
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.preview-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.preview-table th {
+  text-align: left;
+  padding: 8px;
+  background: #e9ecef;
+  color: #495057;
+  font-weight: 500;
+}
+
+.preview-table td {
+  padding: 8px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.import-progress {
+  margin: 20px 0;
+}
+
+.progress-bar {
+  height: 8px;
+  background: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #2980b9;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  margin: 0;
+  color: #666;
+  font-size: 13px;
+  text-align: center;
+}
+
+.import-result {
+  margin: 20px 0;
+  padding: 15px;
+  border-radius: 4px;
+  background: #f8f9fa;
+}
+
+.result-message {
+  padding: 10px;
+  border-radius: 4px;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.result-message.success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.result-message.error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.result-details {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  font-size: 13px;
+  color: #666;
+}
+
+.result-details p {
+  margin: 0;
+}
+
+/* Форма */
+.data-form {
+  padding: 20px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #333;
+  font-size: 14px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #2980b9;
+  box-shadow: 0 0 0 2px rgba(41, 128, 185, 0.1);
+}
+
+.form-control.ng-invalid.ng-touched {
+  border-color: #e74c3c;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.btn-cancel {
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #666;
+  transition: all 0.2s ease;
+}
+
+.btn-cancel:hover {
+  background: #f8f9fa;
+  border-color: #999;
+}
+
+.btn-submit {
+  padding: 8px 16px;
+  border: none;
+  background: #2980b9;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-submit:hover:not(:disabled) {
+  background: #2573a7;
+  transform: translateY(-1px);
+}
+
+.btn-submit:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .data-container {
+    padding: 12px 15px 15px 15px;
+  }
+
+  .data-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .btn-add, .btn-excel {
+    flex: 1;
+    justify-content: center;
+    padding: 8px 8px;
+    font-size: 12px;
+  }
+
+  .btn-add svg, .btn-excel svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .data-table {
+    font-size: 13px;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 8px 12px;
+  }
+
+  .modal-content {
+    width: 95%;
+    margin: 20px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .btn-cancel, .btn-submit {
+    width: 100%;
+  }
+
+  .result-details {
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+  }
+}

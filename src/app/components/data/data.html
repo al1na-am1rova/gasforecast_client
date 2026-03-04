@@ -1,0 +1,205 @@
+<div class="data-container">
+  <div class="data-header">
+    <h3>Данные по расходу газа</h3>
+    <div class="header-actions">
+      <button class="btn-excel" (click)="exportToExcel()" title="Выгрузить в Excel">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Выгрузить
+      </button>
+      <button class="btn-excel" (click)="importFromExcel()" *ngIf="userRole==='admin'" title="Загрузить из Excel">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+        Загрузить
+      </button>
+      <button class="btn-add" (click)="openAddDataForm()" *ngIf="userRole==='admin'">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Добавить запись
+      </button>
+    </div>
+  </div>
+
+
+  <!-- Таблица с данными -->
+  <div class="table-wrapper">
+    <div class="table-scroll-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Дата</th>
+            <th>Расход газа (тыс. м³)</th>
+            <th *ngIf="userRole==='admin'">Действия</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let record of filteredData" class="data-row">
+            <td>{{record.date | date:'MM.yyyy'}}</td>
+            <td class="value-cell">{{record.gasConsumption | number:'1.1-3'}}</td>
+            <td *ngIf="userRole==='admin'" class="actions-cell">
+              <button class="edit-icon" (click)="openEditDataForm(record)" title="Редактировать">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+              </button>
+              <button class="delete-icon" (click)="deleteData(record.id)" title="Удалить">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14Z"/>
+                </svg>
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="filteredData.length === 0">
+            <td colspan="3" class="empty-table-message">
+              {{selectedStationId ? 'Нет данных для выбранной станции' : 'Выберите станцию'}}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Модальное окно для добавления/редактирования записи -->
+<div class="modal-overlay" *ngIf="showDataForm" (click)="closeDataForm()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3 *ngIf="!isEditing">Добавление записи о расходе газа</h3>
+      <h3 *ngIf="isEditing">Редактирование записи</h3>
+      <button class="close-button" (click)="closeDataForm()">&times;</button>
+    </div>
+
+    <form class="data-form" #dataForm="ngForm">
+      <div class="form-group">
+        <label for="date">Дата (месяц и год) *</label>
+        <input type="month" 
+               id="date" 
+               [(ngModel)]="newData.date" 
+               name="date"
+               required
+               class="form-control">
+      </div>
+
+      <div class="form-group">
+        <label for="gasConsumption">Расход газа (тыс. м³) *</label>
+        <input type="number" 
+               id="gasConsumption" 
+               [(ngModel)]="newData.gasConsumption" 
+               name="gasConsumption"
+               required
+               min="0"
+               step="0.1"
+               placeholder="Введите расход газа"
+               class="form-control">
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-cancel" (click)="closeDataForm()">Отмена</button>
+        <button type="button" class="btn-submit" 
+                [disabled]="!dataForm.form.valid"
+                (click)="isEditing ? updateData() : addData()">
+          {{ isEditing ? 'Сохранить изменения' : 'Добавить' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Модальное окно для импорта Excel -->
+<div class="modal-overlay" *ngIf="showExcelModal" (click)="closeExcelModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Загрузка данных из Excel</h3>
+      <button class="close-button" (click)="closeExcelModal()">&times;</button>
+    </div>
+
+    <div class="excel-modal-body">
+      <p class="modal-description">
+        Загрузите файл Excel с данными о расходе газа. Файл должен содержать колонки:
+      </p>
+      <ul class="format-list">
+        <li><strong>дата</strong> - дата в формате ГГГГ-ММ (например, 2023-01)</li>
+        <li><strong>расход</strong> - расход газа (тыс. м³)</li>
+      </ul>
+
+      <div class="file-upload-area" 
+           (dragover)="onDragOver($event)"
+           (drop)="onFileDrop($event)"
+           [class.drag-over]="isDragging">
+        <input type="file" 
+               #fileInput
+               accept=".xlsx, .xls, .csv"
+               (change)="onFileSelected($event)"
+               style="display: none">
+        
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#2980b9" stroke-width="1.5">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="12" y1="18" x2="12" y2="12"/>
+          <line x1="9" y1="15" x2="15" y2="15"/>
+        </svg>
+        
+        <p class="upload-text">
+          Перетащите файл сюда или <a href="#" (click)="triggerFileInput($event)">выберите файл</a>
+        </p>
+        <p class="file-hint" *ngIf="selectedFile">
+          Выбран: {{selectedFile.name}}
+        </p>
+      </div>
+
+      <div class="import-preview" *ngIf="previewData.length > 0">
+        <h4>Предпросмотр (первые 5 записей):</h4>
+        <table class="preview-table">
+          <thead>
+            <tr>
+              <th>Дата</th>
+              <th>Расход газа</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of previewData">
+              <td>{{item.date}}</td>
+              <td>{{item.gasConsumption}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="import-progress" *ngIf="isImporting">
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="importProgress"></div>
+        </div>
+        <p class="progress-text">Импорт... {{importProgress}}%</p>
+      </div>
+
+      <div class="import-result" *ngIf="importResult">
+        <div class="result-message" [class.success]="importResult.success" [class.error]="!importResult.success">
+          {{importResult.message}}
+        </div>
+        <div class="result-details" *ngIf="importResult.details">
+          <p>Добавлено: {{importResult.details.added}}</p>
+          <p>Обновлено: {{importResult.details.updated}}</p>
+          <p>Ошибок: {{importResult.details.errors}}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn-cancel" (click)="closeExcelModal()">Отмена</button>
+      <button type="button" class="btn-submit" 
+              [disabled]="!selectedFile || isImporting"
+              (click)="processExcelFile()">
+        {{ isImporting ? 'Импорт...' : 'Импортировать' }}
+      </button>
+    </div>
+  </div>
+</div>

@@ -6,6 +6,7 @@ import { UnitsService } from '../../services/units.service/units.service';
 import { Router } from "@angular/router";
 import { FormsModule } from '@angular/forms';
 import { Calculator } from '../calculator/calculator';
+import { Data } from '../data/data';
 import { UnitsPassports } from '../units-passports/units-passports';
 
 @Component({
@@ -16,6 +17,7 @@ import { UnitsPassports } from '../units-passports/units-passports';
     CommonModule,
     FormsModule,
     Calculator,
+    Data,
     NgIf,
     UnitsPassports
   ],
@@ -49,6 +51,8 @@ export class Stations {
   units: Unit[] = [];
   showUnitsTable = false;
 
+  /* Переменные для вкладок */
+  showData = false;
   showMethodology = false;
   showMethodology2 = false;
 
@@ -97,7 +101,7 @@ export class Stations {
   selectStation(station: Station) {
     this.selectedStation = station;
     this.selectedStationId = station.id;
-    this.showUnitsTable = false; // Закрываем таблицу при выборе станции
+    this.showUnitsTable = false;
   }
 
   public loadStations() {
@@ -231,17 +235,31 @@ export class Stations {
 
   openUnitsTable() {
     this.showUnitsTable = true;
-    this.selectedStation = null;
+    this.showData = false;
     this.showMethodology = false;
     this.showMethodology2 = false;
+    this.selectedStation = null;
   }
 
   closeUnitsTable() {
     this.showUnitsTable = false;
   }
 
+  /* Функции для вкладки Данные */
+  openData() {
+  this.showData = true;
+  this.showUnitsTable = false;
+  this.showMethodology = false;
+  this.showMethodology2 = false;
+}
+
+closeData() {
+  this.showData = false;
+}
+
   openMethodology() {
     this.showMethodology = true;
+    this.showData = false;
     this.showUnitsTable = false;
     this.showMethodology2 = false;
   }
@@ -251,9 +269,10 @@ export class Stations {
   }
 
   openMethodology2() {
+    this.showMethodology2 = true;
+    this.showData = false;
     this.showMethodology = false;
     this.showUnitsTable = false;
-    this.showMethodology2 = true;
   }
 
   closeMethodology2() {
