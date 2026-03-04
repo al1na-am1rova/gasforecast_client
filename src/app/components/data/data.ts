@@ -1,7 +1,9 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import * as XLSX from 'xlsx';
+import { Chart, registerables } from 'chart.js';
+Chart.register(...registerables);
 
 interface GasData {
   id: number;
@@ -27,14 +29,20 @@ interface ImportResult {
   templateUrl: './data.html',
   styleUrls: ['./data.css']
 })
-export class Data implements OnChanges {
+export class Data implements OnChanges, AfterViewInit {
   @Input() selectedStationId!: number;
+  @ViewChild('gasChart') chartCanvas!: ElementRef;
 
   userRole: string | null = null;
   
   // Данные
   data: GasData[] = [];
   filteredData: GasData[] = [];
+  
+  // График
+  chart: Chart | null = null;
+  chartType: 'line' | 'bar' = 'line';
+  isChartCollapsed = false; // Новое поле для сворачивания графика
   
   // Форма
   showDataForm = false;
@@ -60,6 +68,10 @@ export class Data implements OnChanges {
     this.loadData();
   }
 
+  ngAfterViewInit() {
+    setTimeout(() => this.createChart(), 100);
+  }
+
   ngOnChanges(changes: SimpleChanges) {
     if (changes['selectedStationId']) {
       const newStationId = changes['selectedStationId'].currentValue;
@@ -78,6 +90,8 @@ export class Data implements OnChanges {
       { id: 6, stationId: 2, date: '2023-02', gasConsumption: 1020.6 },
       { id: 7, stationId: 3, date: '2023-01', gasConsumption: 450.2 },
       { id: 8, stationId: 3, date: '2023-02', gasConsumption: 520.8 },
+      { id: 9, stationId: 1, date: '2023-05', gasConsumption: 1410.3 },
+      { id: 10, stationId: 1, date: '2023-06', gasConsumption: 1380.9 },
     ];
     
     this.data = mockData;
@@ -88,9 +102,164 @@ export class Data implements OnChanges {
     if (this.selectedStationId) {
       console.log('Фильтрация для станции ID:', this.selectedStationId);
       this.filteredData = this.data.filter(item => item.stationId === this.selectedStationId);
+      setTimeout(() => this.updateChart(), 100);
     } else {
       this.filteredData = [];
+      if (this.chart) {
+        this.chart.destroy();
+        this.chart = null;
+      }
     }
+  }
+
+  // Переключение сворачивания графика
+  toggleChartCollapse() {
+    this.isChartCollapsed = !this.isChartCollapsed;
+    // Даем время на анимацию сворачивания, затем обновляем график
+    setTimeout(() => {
+      if (!this.isChartCollapsed && this.filteredData.length > 0) {
+        this.updateChart();
+      }
+    }, 300);
+  }
+
+  // Создание графика
+  createChart() {
+    if (!this.chartCanvas || this.filteredData.length === 0 || this.isChartCollapsed) return;
+
+    const ctx = this.chartCanvas.nativeElement.getContext('2d');
+    const sortedData = [...this.filteredData].sort((a, b) => a.date.localeCompare(b.date));
+    const labels = sortedData.map(item => this.formatDateForChart(item.date));
+    const values = sortedData.map(item => item.gasConsumption);
+
+    if (this.chart) {
+      this.chart.destroy();
+    }
+
+    this.chart = new Chart(ctx, {
+      type: this.chartType,
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Расход газа (тыс. м³)',
+          data: values,
+          backgroundColor: 'rgba(41, 128, 185, 0.2)',
+          borderColor: '#2980b9',
+          borderWidth: 2,
+          tension: 0.4,
+          fill: false,
+          pointRadius: 3,
+          pointHoverRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top',
+            labels: {
+              boxWidth: 12,
+              font: {
+                size: 11
+              }
+            }
+          },
+          title: {
+            display: false
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'тыс. м³',
+              font: {
+                size: 10
+              }
+            },
+            ticks: {
+              font: {
+                size: 10
+              }
+            }
+          },
+          x: {
+            ticks: {
+              font: {
+                size: 10
+              },
+              maxRotation: 45,
+              minRotation: 30
+            }
+          }
+        }
+      }
+    });
+  }
+
+  // Обновление графика
+  updateChart() {
+    if (!this.chartCanvas || this.filteredData.length === 0 || this.isChartCollapsed) {
+      if (this.chart) {
+        this.chart.destroy();
+        this.chart = null;
+      }
+      return;
+    }
+
+    const sortedData = [...this.filteredData].sort((a, b) => a.date.localeCompare(b.date));
+    const labels = sortedData.map(item => this.formatDateForChart(item.date));
+    const values = sortedData.map(item => item.gasConsumption);
+
+    if (this.chart) {
+      this.chart.data.labels = labels;
+      this.chart.data.datasets[0].data = values;
+      this.chart.update();
+    } else {
+      this.createChart();
+    }
+  }
+
+  // Смена типа графика
+  toggleChartType() {
+    this.chartType = this.chartType === 'line' ? 'bar' : 'line';
+    if (this.chart) {
+      this.chart.destroy();
+      this.chart = null;
+    }
+    setTimeout(() => this.createChart(), 50);
+  }
+
+  // Форматирование даты для графика
+  formatDateForChart(date: string): string {
+    const [year, month] = date.split('-');
+    const monthNames = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 
+                       'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
+    return `${monthNames[parseInt(month) - 1]} ${year}`;
+  }
+
+  // Статистика
+  getAverageConsumption(): number {
+    if (this.filteredData.length === 0) return 0;
+    const sum = this.filteredData.reduce((acc, item) => acc + item.gasConsumption, 0);
+    return sum / this.filteredData.length;
+  }
+
+  getMaxConsumption(): number {
+    if (this.filteredData.length === 0) return 0;
+    return Math.max(...this.filteredData.map(item => item.gasConsumption));
+  }
+
+  getMinConsumption(): number {
+    if (this.filteredData.length === 0) return 0;
+    return Math.min(...this.filteredData.map(item => item.gasConsumption));
+  }
+
+  getTotalConsumption(): number {
+    return this.filteredData.reduce((acc, item) => acc + item.gasConsumption, 0);
   }
 
   // Excel методы
@@ -148,11 +317,8 @@ export class Data implements OnChanges {
   }
 
   previewFile(file: File) {
-    // Здесь должна быть логика чтения Excel файла
-    // Для демонстрации используем mock данные
     console.log('Preview file:', file.name);
     
-    // Создаем тестовые данные для предпросмотра
     this.previewData = [
       { date: '2024-01', gasConsumption: 1500.5 },
       { date: '2024-02', gasConsumption: 1620.3 },
@@ -169,14 +335,12 @@ export class Data implements OnChanges {
     this.importProgress = 0;
     this.importResult = null;
 
-    // Имитация процесса импорта
     const interval = setInterval(() => {
       this.importProgress += 10;
       
       if (this.importProgress >= 100) {
         clearInterval(interval);
         
-        // Имитация успешного импорта
         const newRecords: GasData[] = [
           { 
             id: Math.max(0, ...this.data.map(d => d.id)) + 1, 
@@ -211,44 +375,36 @@ export class Data implements OnChanges {
   }
 
   exportToExcel() {
-  if (this.filteredData.length === 0) {
-    alert('Нет данных для экспорта');
-    return;
-  }
+    if (this.filteredData.length === 0) {
+      alert('Нет данных для экспорта');
+      return;
+    }
 
-  try {
-    // Подготавливаем данные для Excel
-    const excelData = this.filteredData.map(item => ({
-      'Дата': item.date,
-      'Расход газа (тыс. м³)': item.gasConsumption
-    }));
+    try {
+      const excelData = this.filteredData.map(item => ({
+        'Дата': item.date,
+        'Расход газа (тыс. м³)': item.gasConsumption
+      }));
 
-    // Создаем рабочий лист
-    const worksheet = XLSX.utils.json_to_sheet(excelData);
-    
-    // Создаем рабочую книгу
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Данные по расходу газа');
-    
-    // Настраиваем ширину колонок
-    const colWidths = [
-      { wch: 15 }, // Дата
-      { wch: 20 }  // Расход газа
-    ];
-    worksheet['!cols'] = colWidths;
-    
-    // Формируем имя файла
-    const fileName = `gas_consumption_station_${this.selectedStationId}_${new Date().toISOString().split('T')[0]}.xlsx`;
-    
-    // Сохраняем файл
-    XLSX.writeFile(workbook, fileName);
-    
-    console.log('Данные успешно экспортированы в Excel');
-  } catch (error) {
-    console.error('Ошибка при экспорте в Excel:', error);
-    alert('Ошибка при экспорте данных. Попробуйте ещё раз.');
+      const worksheet = XLSX.utils.json_to_sheet(excelData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Данные по расходу газа');
+      
+      const colWidths = [
+        { wch: 15 },
+        { wch: 20 }
+      ];
+      worksheet['!cols'] = colWidths;
+      
+      const fileName = `gas_consumption_station_${this.selectedStationId}_${new Date().toISOString().split('T')[0]}.xlsx`;
+      XLSX.writeFile(workbook, fileName);
+      
+      console.log('Данные успешно экспортированы в Excel');
+    } catch (error) {
+      console.error('Ошибка при экспорте в Excel:', error);
+      alert('Ошибка при экспорте данных. Попробуйте ещё раз.');
+    }
   }
-}
 
   // CRUD операции
   openAddDataForm() {
