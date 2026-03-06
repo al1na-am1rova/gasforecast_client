@@ -8,7 +8,7 @@
           <button type="button" class="stations-list-button" (click)="selectedStation = null; showUnitsTable = false;">
             Электростанции
           </button>
-          <button type="button" class="add-button-header" (click)="openAddStationForm()" *ngIf="userRole==='admin'">
+          <button type="button" class="add-button-header" (click)="openAddStationForm()">
             + Добавить
           </button>
         </div>
@@ -88,7 +88,7 @@
                    (click)="selectStation(station)">
                 <span class="component-name" [title]="station.name">{{station.name}}</span>
                 <div class="tree-node-actions">
-                  <button *ngIf="userRole==='admin'" 
+                  <button 
                           (click)="$event.stopPropagation(); openDeleteConfirmation(station, deleteStation.bind(this))"
                           class="delete-icon"
                           title="Удалить станцию">
@@ -97,7 +97,7 @@
                     </svg>
                   </button>
 
-                  <button *ngIf="userRole==='admin'" 
+                  <button 
                           (click)="$event.stopPropagation(); isStationEditing = true; selectStation(station); openAddStationForm()"
                           class="edit-icon"
                           title="Редактировать станцию">
