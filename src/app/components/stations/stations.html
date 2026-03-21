@@ -45,7 +45,7 @@
         <line x1="18" y1="8" x2="22" y2="4" stroke-dasharray="2 2" />
         <polygon points="22,4 20,6 22,8 24,6" transform="rotate(45 22 4)" />
       </svg>
-      <span>Метод 2</span>
+      <span>Метод градиентного бустинга</span>
     </button>
 
     <button class="table-view-button-top" [class.active]="showUnitsTable === true" (click)="openUnitsTable()" title="Открыть таблицу агрегатов">
@@ -185,6 +185,8 @@
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
         </button>
+
+        <app-gb-forecast *ngIf="selectedStation" [selectedStationId]="selectedStationId"></app-gb-forecast>
 
         <!-- Если станция не выбрана, показываем сообщение -->
         <div *ngIf="!selectedStation" class="empty-state">

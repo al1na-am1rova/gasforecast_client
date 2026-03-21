@@ -1,0 +1,638 @@
+/* ===== КОНТЕЙНЕР ===== */
+.gb-forecast-container {
+    height: 65vh;
+    display: flex;
+    flex-direction: column;
+    background: #f8f9fa;
+    padding: 12px 16px 16px 16px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.forecast-wrapper {
+    display: grid;
+    grid-template-columns: minmax(320px, 1fr) minmax(350px, 1.2fr);
+    gap: 16px;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+}
+
+
+
+/* ===== ЛЕВАЯ КОЛОНКА - ФОРМА ===== */
+.forecast-form-container {
+  background: #ffffff;
+  border-radius: 4px;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e8ecef;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%; 
+  overflow: hidden; 
+}
+
+.forecast-header {
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  flex-shrink: 0;
+}
+
+.forecast-header h2 {
+  margin: 0 0 4px 0;
+  color: #2c3e50;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.forecast-description {
+  margin: 0;
+  color: #7f8c8d;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.forecast-body {
+  padding: 16px;
+  flex: 1; 
+  overflow-y: auto;
+  min-height: 0; 
+}
+
+/* Информация о модели */
+.model-info {
+  background: #f8f9fa;
+  border-radius: 4px;
+  padding: 12px;
+  margin-bottom: 16px;
+  border-left: 3px solid #2980b9;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+
+.info-row:last-child {
+  margin-bottom: 0;
+}
+
+.info-label {
+  color: #7f8c8d;
+}
+
+.info-value {
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+.info-value.ready {
+  color: #27ae60;
+}
+
+.info-value.not-ready {
+  color: #e74c3c;
+}
+
+.info-value.accuracy {
+  color: #2980b9;
+}
+
+/* Форма */
+.prediction-form {
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #34495e;
+  font-size: 13px;
+}
+
+.required-star {
+  color: #e74c3c;
+  margin-left: 2px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #e8ecef;
+  border-radius: 4px;
+  font-size: 13px;
+  transition: all 0.2s ease;
+  background-color: #fafbfc;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #3498db;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1);
+}
+
+.field-hint {
+  font-size: 11px;
+  color: #95a5a6;
+  margin-top: 4px;
+}
+
+/* Кнопка прогноза */
+.form-actions {
+  margin-top: 8px;
+}
+
+.btn-forecast {
+  width: 100%;
+  padding: 10px 20px;
+  border: none;
+  background: #2980b9;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-forecast:hover:not(:disabled) {
+  background: #2573a7;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(41, 128, 185, 0.3);
+}
+
+.btn-forecast:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-forecast:disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Сообщения */
+.no-model-message {
+  text-align: center;
+  padding: 32px 16px;
+  color: #7f8c8d;
+}
+
+.no-model-message svg {
+  margin-bottom: 16px;
+}
+
+.no-model-message p {
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+.small-text {
+  font-size: 12px;
+  color: #95a5a6;
+}
+
+.error-message {
+  color: #e74c3c;
+  font-size: 13px;
+  padding: 12px;
+  background: #fff6f6;
+  border-radius: 4px;
+  margin-top: 16px;
+}
+
+/* ===== ПРАВАЯ КОЛОНКА - ГРАФИК ===== */
+.forecast-chart-container {
+  background: #ffffff;
+  border-radius: 4px;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e8ecef;
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* Важно для flex-контейнера */
+  height: 100%; /* Занимает всю высоту */
+  overflow: hidden; /* Убираем скролл у контейнера */
+}
+
+.chart-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1; /* Занимает всё доступное пространство */
+  min-height: 0; /* Важно для корректной работы flex */
+  overflow-y: auto; /* Скролл только внутри обертки */
+  overflow-x: hidden;
+}
+
+
+/* Кастомизация скроллбара для правой колонки */
+.chart-wrapper::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chart-wrapper::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.chart-wrapper::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.chart-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Для Firefox */
+.chart-wrapper {
+  scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 #f1f1f1;
+}
+
+.chart-wrapper.collapsed {
+  overflow-y: visible;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  flex-shrink: 0;
+  background: white;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.chart-header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.chart-header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.btn-toggle {
+  background: #f8f9fa;
+  border: 1px solid #e1e5e9;
+  border-radius: 4px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  color: #6c757d;
+  flex-shrink: 0;
+}
+
+.btn-toggle:hover {
+  background: #e9ecef;
+  color: #2980b9;
+  border-color: #2980b9;
+}
+
+.btn-toggle svg {
+  width: 14px;
+  height: 14px;
+}
+
+.chart-container {
+  width: 100%;
+  min-height: 280px;
+  height: 280px;
+  position: relative;
+  padding: 12px;
+  flex-shrink: 0;
+  transition: height 0.3s ease;
+}
+
+/* Результат прогноза в правой колонке */
+.result-card-inline {
+  margin: 16px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-radius: 8px;
+  border: 1px solid #e8ecef;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  flex-shrink: 0; 
+  max-width: calc(100% - 32px);
+}
+
+
+.result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e8ecef;
+}
+
+.result-header h4 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.result-badge {
+  background: #27ae60;
+  color: white;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.result-content {
+  padding: 16px;
+  text-align: center;
+}
+
+.result-date {
+  font-size: 14px;
+  color: #7f8c8d;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.result-value-large {
+  margin-bottom: 16px;
+}
+
+.value-number-large {
+  font-size: 42px;
+  font-weight: 700;
+  color: #2980b9;
+}
+
+.result-details {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.confidence-wrapper {
+  margin-bottom: 12px;
+}
+
+.confidence-label {
+  font-size: 11px;
+  color: #7f8c8d;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.confidence-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #27ae60;
+  display: inline-block;
+  margin-bottom: 8px;
+}
+
+.confidence-bar {
+  height: 4px;
+  background: #e0e0e0;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.confidence-fill {
+  height: 100%;
+  background: #27ae60;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.version-info {
+  font-size: 10px;
+  color: #95a5a6;
+  text-align: center;
+}
+
+/* Статистика */
+.stats-container {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid #f0f0f0;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  flex-shrink: 0;
+  background: white;
+  position: sticky;
+  bottom: 0;
+  margin-top: auto;
+}
+
+.stat-card {
+  flex: 1;
+  min-width: 90px;
+  background: #f8f9fa;
+  border-radius: 4px;
+  padding: 8px 10px;
+  text-align: center;
+  border-left: 2px solid #2980b9;
+  transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.stat-label {
+  display: block;
+  color: #7f8c8d;
+  font-size: 10px;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.stat-value {
+  display: inline-block;
+  color: #2c3e50;
+  font-size: 16px;
+  font-weight: 600;
+  margin-right: 3px;
+}
+
+.stat-unit {
+  color: #95a5a6;
+  font-size: 10px;
+}
+
+.no-data-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 300px;
+  color: #95a5a6;
+  text-align: center;
+}
+
+.no-data-message svg {
+  margin-bottom: 16px;
+}
+
+.no-data-message p {
+  margin: 4px 0;
+  font-size: 14px;
+}
+
+/* Загрузка */
+.loading-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px;
+  color: #7f8c8d;
+  font-size: 13px;
+}
+
+.spinner-small {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #e0e0e0;
+  border-top: 2px solid #2980b9;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.spinner-small-white {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid #ffffff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+}
+
+.loading-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Скроллбары для левой колонки */
+.forecast-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.forecast-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.forecast-body::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+/* ===== АДАПТИВНОСТЬ ===== */
+@media (max-width: 900px) {
+  .forecast-wrapper {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    overflow-y: auto;
+  }
+  
+  .gb-forecast-container {
+    padding: 10px;
+    height: auto;
+  }
+  
+  .forecast-form-container,
+  .forecast-chart-container {
+    max-height: 500px;
+  }
+  
+  .chart-container {
+    min-height: 220px;
+    height: 220px;
+  }
+  
+  .value-number-large {
+    font-size: 32px;
+  }
+}
+
+@media (max-width: 768px) {
+  .forecast-header {
+    padding: 12px;
+  }
+  
+  .forecast-body {
+    padding: 12px;
+  }
+  
+  .stat-card {
+    min-width: 70px;
+  }
+  
+  .stat-value {
+    font-size: 14px;
+  }
+  
+  .value-number-large {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .forecast-header h2 {
+    font-size: 14px;
+  }
+  
+  .chart-header h3 {
+    font-size: 12px;
+  }
+  
+  .stats-container {
+    gap: 4px;
+  }
+  
+  .stat-card {
+    padding: 6px 8px;
+  }
+  
+  .stat-value {
+    font-size: 12px;
+  }
+  
+  .value-number-large {
+    font-size: 24px;
+  }
+}

@@ -6,6 +6,7 @@ import { UnitsService } from '../../services/units.service/units.service';
 import { Router } from "@angular/router";
 import { FormsModule } from '@angular/forms';
 import { Calculator } from '../calculator/calculator';
+import { GbForecast } from '../gb-forecast/gb-forecast';
 import { Data } from '../data/data';
 import { UnitsPassports } from '../units-passports/units-passports';
 
@@ -17,6 +18,7 @@ import { UnitsPassports } from '../units-passports/units-passports';
     CommonModule,
     FormsModule,
     Calculator,
+    GbForecast,
     Data,
     NgIf,
     UnitsPassports

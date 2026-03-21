@@ -1,0 +1,172 @@
+<div class="gb-forecast-container">
+  <div class="forecast-wrapper">
+    
+    <!-- Левая колонка - форма прогноза -->
+    <div class="forecast-form-container">
+      <div class="forecast-header">
+        <h2>Прогноз расхода газа</h2>
+        <p class="forecast-description">
+          Прогнозирование на основе ежедневных данных (агрегированных по месяцам)
+        </p>
+      </div>
+      
+      <div class="forecast-body">
+        <!-- Информация о модели -->
+        <div class="model-info" *ngIf="modelInfo">
+          <div class="info-row">
+            <span class="info-label">Состояние модели:</span>
+            <span class="info-value" [class.ready]="modelInfo.exists" [class.not-ready]="!modelInfo.exists">
+              {{ modelInfo.exists ? 'Готова' : 'Не готова' }}
+            </span>
+          </div>
+          <div class="info-row" *ngIf="modelInfo.exists">
+            <span class="info-label">Версия:</span>
+            <span class="info-value">{{ modelInfo.version }}</span>
+          </div>
+          <div class="info-row" *ngIf="modelInfo.exists">
+            <span class="info-label">Обучена:</span>
+            <span class="info-value">{{ modelInfo.lastTrained | date:'dd.MM.yyyy' }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Данных для обучения:</span>
+            <span class="info-value">{{ modelInfo.dataPoints }} записей (ежедневных)</span>
+          </div>
+          <div class="info-row" *ngIf="modelInfo.accuracyMape">
+            <span class="info-label">Точность модели:</span>
+            <span class="info-value accuracy">{{ (100 - modelInfo.accuracyMape).toFixed(1) }}%</span>
+          </div>
+        </div>
+        
+        <div class="loading-info" *ngIf="isLoading">
+          <div class="spinner-small"></div>
+          <span>Загрузка информации о модели...</span>
+        </div>
+        
+        <!-- Форма прогноза -->
+        <div class="prediction-form" *ngIf="modelInfo?.exists">
+          <div class="form-group">
+            <label class="form-label">
+              Месяц прогноза <span class="required-star">*</span>
+            </label>
+            <input
+              type="month"
+              class="form-input"
+              [(ngModel)]="predictionMonth"
+              [min]="getMinMonth()"
+              [max]="getMaxMonth()"
+            />
+            <div class="field-hint">Выберите месяц для прогноза (прогноз на весь месяц)</div>
+          </div>
+          
+          <div class="form-actions">
+            <button 
+              type="button" 
+              class="btn-forecast"
+              (click)="makePrediction()"
+              [disabled]="!predictionMonth || isPredicting"
+            >
+              <span *ngIf="!isPredicting">Сделать прогноз на месяц</span>
+              <span *ngIf="isPredicting" class="loading-text">
+                <span class="spinner-small-white"></span>
+                Прогнозирование...
+              </span>
+            </button>
+          </div>
+        </div>
+        
+        <div class="no-model-message" *ngIf="!isLoading && modelInfo && !modelInfo.exists">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#e74c3c" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <p>Модель для этой станции ещё не обучена</p>
+          <p class="small-text">Необходимо накопить минимум 30 записей о ежедневном расходе газа</p>
+        </div>
+        
+        <div class="error-message" *ngIf="errorMessage">
+          {{ errorMessage }}
+        </div>
+      </div>
+    </div>
+    
+    <!-- Правая колонка - график и результат -->
+    <div class="forecast-chart-container">
+      <div class="chart-wrapper" *ngIf="monthlyData.length > 0" [class.collapsed]="isChartCollapsed">
+        <div class="chart-header">
+          <h3>Визуализация данных и прогноза</h3>
+          <div class="chart-header-actions">
+            <button class="btn-toggle" (click)="toggleChartCollapse()" title="Свернуть/развернуть график">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline *ngIf="!isChartCollapsed" points="18 15 12 9 6 15"></polyline>
+                <polyline *ngIf="isChartCollapsed" points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+          </div>
+        </div>
+        
+        <div class="chart-container" *ngIf="!isChartCollapsed">
+          <canvas #forecastChart></canvas>
+        </div>
+        
+        <!-- Результат прогноза - теперь в правой колонке -->
+        <div class="result-card-inline" *ngIf="predictionResult">
+          <div class="result-header">
+            <h4>Результат прогноза</h4>
+          </div>
+          <div class="result-content">
+            <div class="result-date">
+              {{ formatMonthForDisplay(predictionResult.date) }}
+            </div>
+            <div class="result-value-large">
+              <span class="value-number-large">{{ predictionResult.predictedConsumption | number:'1.1-2' }}</span>
+              <span class="value-unit">тыс. м³</span>
+            </div>
+            <div class="result-details">
+              <div class="confidence-wrapper">
+                <span class="confidence-label">Уверенность:</span>
+                <span class="confidence-value">{{ (predictionResult.confidence * 100).toFixed(0) }}%</span>
+                <div class="confidence-bar">
+                  <div class="confidence-fill" [style.width.%]="predictionResult.confidence * 100"></div>
+                </div>
+              </div>
+              <div class="version-info">
+                Версия модели: {{ predictionResult.modelVersion }}
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Статистика -->
+        <div class="stats-container" *ngIf="monthlyData.length > 0">
+          <div class="stat-card">
+            <span class="stat-label">Средний месячный факт</span>
+            <span class="stat-value">{{ getAverageMonthlyActual() | number:'1.1-2' }}</span>
+            <span class="stat-unit">тыс. м³/мес</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Макс месячный факт</span>
+            <span class="stat-value">{{ getMaxMonthlyActual() | number:'1.1-2' }}</span>
+            <span class="stat-unit">тыс. м³</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Прогноз на {{ getForecastMonthsCount() }} мес</span>
+            <span class="stat-value">{{ getTotalForecast() | number:'1.1-2' }}</span>
+            <span class="stat-unit">тыс. м³</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="no-data-message" *ngIf="monthlyData.length === 0 && !isLoading">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#95a5a6" stroke-width="1.5">
+          <path d="M21 16v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2"/>
+          <path d="M7 10l5 5 5-5"/>
+          <path d="M12 15V3"/>
+        </svg>
+        <p>Нет данных для отображения</p>
+        <p class="small-text">Добавьте ежедневные данные о расходе газа или выберите другую станцию</p>
+      </div>
+    </div>
+    
+  </div>
+</div>
