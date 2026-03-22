@@ -198,6 +198,7 @@
 }
 
 .small-text {
+  text-align: center;
   font-size: 12px;
   color: #95a5a6;
 }
@@ -236,7 +237,7 @@
 
 /* Кастомизация скроллбара для правой колонки */
 .chart-wrapper::-webkit-scrollbar {
-  width: 8px;
+  width: 5px;
 }
 
 .chart-wrapper::-webkit-scrollbar-track {
@@ -317,13 +318,25 @@
 }
 
 .chart-container {
-  width: 100%;
-  min-height: 280px;
-  height: 280px;
+  width: 95;
+  overflow-x: auto;
+  overflow-y: hidden;
   position: relative;
   padding: 12px;
   flex-shrink: 0;
   transition: height 0.3s ease;
+}
+
+.chart-inner {
+  min-width: 100%;
+  width: max-content;
+  height: 280px;
+}
+
+.chart-container canvas {
+  max-width: 100%;
+  min-width: 1000px;
+   display: inline-block;
 }
 
 /* Результат прогноза в правой колонке */
@@ -435,13 +448,13 @@
 .stats-container {
   display: flex;
   gap: 8px;
-  padding: 12px 16px;
+  padding: 5px 5px;
   border-top: 1px solid #f0f0f0;
   flex-wrap: wrap;
   justify-content: space-between;
   flex-shrink: 0;
   background: white;
-  position: sticky;
+  position: static;
   bottom: 0;
   margin-top: auto;
 }
@@ -539,6 +552,44 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
+}
+
+.admin-actions {
+  margin-top: 0px;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.btn-train {
+  width: 100%;
+  padding: 10px 20px;
+  background: #2980b9;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-train:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.btn-train:disabled {
+  background: #bdc3c7;
+  cursor: not-allowed;
+}
+
+.no-model-message {
+  text-align: center;
+  padding: 32px 16px;
+  color: #7f8c8d;
+}
+
+.no-model-message svg {
+  margin-bottom: 16px;
 }
 
 @keyframes spin {

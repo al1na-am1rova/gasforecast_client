@@ -2,25 +2,14 @@ import { Component, Input, OnChanges, SimpleChanges, OnInit, ViewChild, ElementR
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Chart, registerables } from 'chart.js';
+import { 
+  Forecast, 
+  ModelInfo, 
+  MonthlyForecast, 
+  PredictionResponse 
+} from '../../services/forecast.service/forecast';
 
 Chart.register(...registerables);
-
-interface ForecastResponse {
-  stationId: number;
-  date: string;        // YYYY-MM
-  predictedConsumption: number;
-  confidence: number;
-  modelVersion: string;
-}
-
-interface ModelInfo {
-  stationId: number;
-  exists: boolean;
-  version: string | null;
-  lastTrained: string | null;
-  dataPoints: number;
-  accuracyMape: number | null;
-}
 
 interface DailyData {
   date: string;        // YYYY-MM-DD
@@ -33,6 +22,12 @@ interface MonthlyData {
   predicted: number | null;  // прогноз на месяц
 }
 
+export interface CombinedData {
+  historical: MonthlyForecast[];
+  forecast: MonthlyForecast[];
+  modelInfo: ModelInfo;
+}
+
 @Component({
   selector: 'app-gb-forecast',
   standalone: true,
@@ -41,14 +36,19 @@ interface MonthlyData {
   styleUrls: ['./gb-forecast.css']
 })
 export class GbForecast implements OnInit, OnChanges, AfterViewInit {
+
+
   @Input() selectedStationId!: number;
   @ViewChild('forecastChart') chartCanvas!: ElementRef;
   
+    // Добавьте в класс
+userRole: string | null = null;
+
   // Данные для формы
   predictionMonth: string = '';
   
   // Результат предсказания
-  predictionResult: ForecastResponse | null = null;
+  predictionResult: PredictionResponse | null = null;
   
   // Информация о модели
   modelInfo: ModelInfo | null = null;
@@ -60,22 +60,26 @@ export class GbForecast implements OnInit, OnChanges, AfterViewInit {
   // Состояния
   isLoading = false;
   isPredicting = false;
+  isTraining = false;
   errorMessage: string | null = null;
   
   // График
   chart: Chart | null = null;
   isChartCollapsed = false;
   
-  // Период отображения (количество месяцев назад и вперед)
+  // Период отображения
   pastMonthsCount: number = 6;
   futureMonthsCount: number = 3;
   
-  constructor() {}
+  constructor(private forecastService: Forecast) {
+     this.userRole = sessionStorage.getItem('userRole') || null;
+
+  }
   
   ngOnInit() {
     if (this.selectedStationId) {
       this.loadModelInfo();
-      this.loadDailyData();
+      this.loadData();
     }
     
     // Устанавливаем дату по умолчанию (следующий месяц)
@@ -85,7 +89,7 @@ export class GbForecast implements OnInit, OnChanges, AfterViewInit {
   }
   
   ngAfterViewInit() {
-    setTimeout(() => this.createChart(), 100);
+    this.createChart();
   }
   
   ngOnChanges(changes: SimpleChanges) {
@@ -96,7 +100,7 @@ export class GbForecast implements OnInit, OnChanges, AfterViewInit {
       if (newStationId) {
         this.resetPrediction();
         this.loadModelInfo();
-        this.loadDailyData();
+        this.loadData();
       } else {
         this.resetAll();
       }
@@ -111,118 +115,72 @@ export class GbForecast implements OnInit, OnChanges, AfterViewInit {
     this.isLoading = true;
     this.errorMessage = null;
     
-    // TODO: Подключить реальный сервис
-    setTimeout(() => {
-      this.modelInfo = {
-        stationId: this.selectedStationId,
-        exists: true,
-        version: 'v1.2.3',
-        lastTrained: '2024-03-21T14:30:22',
-        dataPoints: 187,
-        accuracyMape: 8.5
-      };
-      this.isLoading = false;
-    }, 500);
-  }
-  
-  loadDailyData() {
-    if (!this.selectedStationId) return;
-    
-    // TODO: Подключить реальный сервис для получения ежедневных данных
-    setTimeout(() => {
-      const data: DailyData[] = [];
-      const now = new Date();
-      
-      // Генерируем данные за последние 180 дней
-      for (let i = 180; i >= 0; i--) {
-        const date = new Date(now);
-        date.setDate(now.getDate() - i);
+    this.forecastService.getModelInfo(this.selectedStationId).subscribe({
+      next: (info) => {
+        this.modelInfo = info;
+        this.isLoading = false;
         
-        // Добавляем сезонность и случайность
-        const month = date.getMonth();
-        const seasonalFactor = 1 + Math.sin(month * Math.PI / 6) * 0.3;
-        const random = 0.8 + Math.random() * 0.4;
-        
-        const consumption = 100 * seasonalFactor * random;
-        
-        data.push({
-          date: date.toISOString().slice(0, 10),
-          consumption: Math.round(consumption * 10) / 10
-        });
+        // Если модели нет, но есть данные (больше 30 записей), можно показать сообщение
+        if (!info.exists && info.dataPoints >= 30) {
+          console.log('Модель не обучена, но данных достаточно для обучения');
+        }
+      },
+      error: (err) => {
+        this.errorMessage = 'Не удалось загрузить информацию о модели';
+        this.isLoading = false;
+        console.error('Error loading model info:', err);
       }
-      
-      this.dailyData = data;
-      this.aggregateMonthlyData();
-      this.loadMonthlyForecast();
-      setTimeout(() => this.updateChart(), 100);
-    }, 300);
-  }
-  
-  // Агрегация дневных данных в месячные суммы
-  aggregateMonthlyData() {
-    const monthlyMap = new Map<string, number>();
-    
-    this.dailyData.forEach(day => {
-      const month = day.date.slice(0, 7); // YYYY-MM
-      const currentSum = monthlyMap.get(month) || 0;
-      monthlyMap.set(month, currentSum + day.consumption);
     });
-    
-    // Получаем последние 6 месяцев
-    const months = Array.from(monthlyMap.keys()).sort().slice(-this.pastMonthsCount);
-    
-    this.monthlyData = months.map(month => ({
-      month: month,
-      actual: monthlyMap.get(month) || null,
-      predicted: null
-    }));
-    
-    console.log('Агрегированные месячные данные:', this.monthlyData);
   }
   
-  loadMonthlyForecast() {
-    if (!this.selectedStationId || this.dailyData.length === 0) return;
-    
-    // TODO: Получить прогноз на несколько месяцев вперед
-    setTimeout(() => {
-      const now = new Date();
-      const currentYear = now.getFullYear();
-      const currentMonth = now.getMonth();
+loadData() {
+  if (!this.selectedStationId) return;
+  
+  this.isLoading = true;
+  
+  this.forecastService.getCombinedData(this.selectedStationId, this.futureMonthsCount).subscribe({
+    next: (combined: CombinedData) => {
+      console.log('Полученные данные:', combined);
       
-      // Получаем среднемесячный расход за последние 3 месяца
-      const last3Months = this.monthlyData.slice(-3);
-      const avgMonthly = last3Months.reduce((sum, m) => sum + (m.actual || 0), 0) / last3Months.length;
-      
-      // Генерируем прогноз на будущие месяцы
-      const futureForecasts: MonthlyData[] = [];
-      
-      for (let i = 1; i <= this.futureMonthsCount; i++) {
-        const forecastDate = new Date(currentYear, currentMonth + i, 1);
-        const monthStr = `${forecastDate.getFullYear()}-${String(forecastDate.getMonth() + 1).padStart(2, '0')}`;
-        
-        // Сезонный коэффициент
-        const month = forecastDate.getMonth();
-        const seasonalFactor = 1 + Math.sin(month * Math.PI / 6) * 0.25;
-        
-        // Прогноз на основе среднего + сезонности + небольшой тренд
-        const predicted = avgMonthly * seasonalFactor * (1 + i * 0.02);
-        
-        futureForecasts.push({
-          month: monthStr,
-          actual: null,
-          predicted: Math.round(predicted * 10) / 10
-        });
+      if (combined.historical && combined.historical.length > 0) {
+        this.monthlyData = combined.historical.map((h: MonthlyForecast) => ({
+          month: h.month,
+          actual: h.predicted,
+          predicted: null
+        }));
+      } else {
+        this.monthlyData = [];
       }
       
-      // Объединяем исторические данные и прогноз
-      this.monthlyData = [...this.monthlyData, ...futureForecasts];
+      // Добавляем прогноз ТОЛЬКО если модель существует
+      if (combined.modelInfo && combined.modelInfo.exists && combined.forecast && combined.forecast.length > 0) {
+        const forecastData = combined.forecast.map((f: MonthlyForecast) => ({
+          month: f.month,
+          actual: null,
+          predicted: f.predicted
+        }));
+        this.monthlyData = [...this.monthlyData, ...forecastData];
+      } else {
+        console.log('Модель не обучена, отображаем только фактические данные');
+      }
       
-      console.log('Месячные данные с прогнозом:', this.monthlyData);
+      // Обновляем информацию о модели
+      if (combined.modelInfo) {
+        this.modelInfo = combined.modelInfo;
+      }
+      
+      this.isLoading = false;
       this.updateChart();
-    }, 300);
-  }
+    },
+    error: (err) => {
+      console.error('Error loading combined data:', err);
+      this.errorMessage = 'Не удалось загрузить данные';
+      this.isLoading = false;
+    }
+  });
+}
   
-  // ===== Прогнозирование на конкретный месяц =====
+  // ===== Прогнозирование =====
   
   makePrediction() {
     if (!this.selectedStationId) {
@@ -244,119 +202,98 @@ export class GbForecast implements OnInit, OnChanges, AfterViewInit {
       month: this.predictionMonth
     };
     
-    console.log('Отправка запроса на прогноз:', request);
-    
-    // TODO: Подключить реальный сервис
-    setTimeout(() => {
-      // Ищем существующий прогноз
-      let predictedValue = 0;
-      const existing = this.monthlyData.find(m => m.month === this.predictionMonth);
-      
-      if (existing && existing.predicted) {
-        predictedValue = existing.predicted;
-      } else {
-        // Генерируем на основе исторических данных
-        const last3Months = this.monthlyData
-          .filter(m => m.actual !== null)
-          .slice(-3);
+    this.forecastService.predict(request).subscribe({
+      next: (result) => {
+        this.predictionResult = result;
+        this.isPredicting = false;
         
-        const avgMonthly = last3Months.reduce((sum, m) => sum + (m.actual || 0), 0) / last3Months.length;
+        // Обновляем данные
+        const existingIndex = this.monthlyData.findIndex(m => m.month === this.predictionMonth);
+        if (existingIndex >= 0) {
+          this.monthlyData[existingIndex].predicted = result.predictedConsumption;
+        } else {
+          this.monthlyData.push({
+            month: this.predictionMonth,
+            actual: null,
+            predicted: result.predictedConsumption
+          });
+          this.monthlyData.sort((a, b) => a.month.localeCompare(b.month));
+        }
         
-        const [year, month] = this.predictionMonth.split('-');
-        const monthNum = parseInt(month) - 1;
-        const seasonalFactor = 1 + Math.sin(monthNum * Math.PI / 6) * 0.25;
-        
-        predictedValue = avgMonthly * seasonalFactor;
-        predictedValue = Math.round(predictedValue * 10) / 10;
+        this.updateChart();
+      },
+      error: (err) => {
+        this.errorMessage = err.message || 'Ошибка при получении прогноза';
+        this.isPredicting = false;
+        console.error('Prediction error:', err);
       }
-      
-      this.predictionResult = {
-        stationId: this.selectedStationId,
-        date: this.predictionMonth,
-        predictedConsumption: predictedValue,
-        confidence: 0.85 + Math.random() * 0.1,
-        modelVersion: this.modelInfo?.version || 'v1.0.0'
-      };
-      this.isPredicting = false;
-      
-      // Обновляем данные
-      const existingIndex = this.monthlyData.findIndex(m => m.month === this.predictionMonth);
-      if (existingIndex >= 0) {
-        this.monthlyData[existingIndex].predicted = predictedValue;
-      } else {
-        this.monthlyData.push({
-          month: this.predictionMonth,
-          actual: null,
-          predicted: predictedValue
-        });
-        this.monthlyData.sort((a, b) => a.month.localeCompare(b.month));
-      }
-      
-      this.updateChart();
-    }, 800);
+    });
   }
   
   // ===== График =====
   
   toggleChartCollapse() {
     this.isChartCollapsed = !this.isChartCollapsed;
-    setTimeout(() => {
-      if (!this.isChartCollapsed && this.monthlyData.length > 0) {
+    if (!this.isChartCollapsed && this.monthlyData.length > 0) {
         this.updateChart();
-      }
-    }, 300);
+      };
   }
-  
+
   createChart() {
   if (!this.chartCanvas || this.isChartCollapsed || this.monthlyData.length === 0) return;
   
   const ctx = this.chartCanvas.nativeElement.getContext('2d');
+  if (!ctx) return;
   
   const labels = this.monthlyData.map(item => this.formatMonthForChart(item.month));
   const actualData = this.monthlyData.map(item => item.actual);
-  const predictedData = this.monthlyData.map(item => item.predicted);
+  const predictedData = this.modelInfo?.exists ? this.monthlyData.map(item => item.predicted) : [];
   
   if (this.chart) {
     this.chart.destroy();
   }
   
+  const datasets = [
+    {
+      label: 'Фактический расход',
+      data: actualData,
+      borderColor: '#2980b9',
+      backgroundColor: 'rgba(41, 128, 185, 0.1)',
+      borderWidth: 2,
+      tension: 0.3,
+      pointRadius: 4,
+      pointHoverRadius: 6,
+      pointBackgroundColor: '#2980b9',
+      pointBorderColor: '#fff',
+      pointBorderWidth: 2,
+      fill: false,
+      spanGaps: true
+    }
+  ];
+  
+  if (this.modelInfo?.exists && predictedData.some(v => v !== null)) {
+    datasets.push({
+      label: 'Прогноз',
+      data: predictedData,
+      borderColor: '#e67e22',
+      backgroundColor: 'rgba(230, 126, 34, 0.1)',
+      borderWidth: 2,
+      tension: 0.3,
+      pointRadius: 5,
+      pointHoverRadius: 7,
+      pointBackgroundColor: '#e67e22',
+      pointBorderColor: '#fff',
+      pointBorderWidth: 2,
+      fill: false,
+      spanGaps: true
+    });
+  }
+  
   this.chart = new Chart(ctx, {
-    type: 'line',  // Меняем с 'bar' на 'line'
+    type: 'line',
     data: {
       labels: labels,
-      datasets: [
-        {
-          label: 'Фактический расход (месяц)',
-          data: actualData,
-          borderColor: '#2980b9',
-          backgroundColor: 'rgba(41, 128, 185, 0.1)',
-          borderWidth: 2,
-          tension: 0.3,
-          pointRadius: 4,
-          pointHoverRadius: 6,
-          pointBackgroundColor: '#2980b9',
-          pointBorderColor: '#fff',
-          pointBorderWidth: 2,
-          fill: false,
-          spanGaps: true
-        },
-        {
-          label: 'Прогноз',
-          data: predictedData,
-          borderColor: '#e67e22',
-          backgroundColor: 'rgba(230, 126, 34, 0.1)',
-          borderWidth: 2,
-          borderDash: [5, 5],
-          tension: 0.3,
-          pointRadius: 5,
-          pointHoverRadius: 7,
-          pointBackgroundColor: '#e67e22',
-          pointBorderColor: '#fff',
-          pointBorderWidth: 2,
-          fill: false,
-          spanGaps: true
-        }
-      ]
+      datasets: datasets
     },
     options: {
       responsive: true,
@@ -389,8 +326,7 @@ export class GbForecast implements OnInit, OnChanges, AfterViewInit {
             font: { size: 10 }
           },
           ticks: { 
-            font: { size: 10 },
-            callback: (value) => value.toLocaleString()
+            font: { size: 10 }
           }
         },
         x: {
@@ -410,28 +346,28 @@ export class GbForecast implements OnInit, OnChanges, AfterViewInit {
   });
 }
   
-updateChart() {
-  if (!this.chartCanvas || this.isChartCollapsed || this.monthlyData.length === 0) {
-    if (this.chart) {
-      this.chart.destroy();
-      this.chart = null;
+  updateChart() {
+    if (!this.chartCanvas || this.isChartCollapsed || this.monthlyData.length === 0) {
+      if (this.chart) {
+        this.chart.destroy();
+        this.chart = null;
+      }
+      return;
     }
-    return;
+    
+    const labels = this.monthlyData.map(item => this.formatMonthForChart(item.month));
+    const actualData = this.monthlyData.map(item => item.actual);
+    const predictedData = this.monthlyData.map(item => item.predicted);
+    
+    if (this.chart) {
+      this.chart.data.labels = labels;
+      this.chart.data.datasets[0].data = actualData;
+      this.chart.data.datasets[1].data = predictedData;
+      this.chart.update();
+    } else {
+      this.createChart();
+    }
   }
-  
-  const labels = this.monthlyData.map(item => this.formatMonthForChart(item.month));
-  const actualData = this.monthlyData.map(item => item.actual);
-  const predictedData = this.monthlyData.map(item => item.predicted);
-  
-  if (this.chart) {
-    this.chart.data.labels = labels;
-    this.chart.data.datasets[0].data = actualData;
-    this.chart.data.datasets[1].data = predictedData;
-    this.chart.update();
-  } else {
-    this.createChart();
-  }
-}
   
   // ===== Вспомогательные методы =====
   
@@ -452,7 +388,7 @@ updateChart() {
   
   getMinMonth(): string {
     const today = new Date();
-    return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+    return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')} - 2`;
   }
   
   getMaxMonth(): string {
@@ -478,7 +414,8 @@ updateChart() {
     }
   }
   
-  // Статистика
+  // ===== Статистика =====
+  
   getAverageMonthlyActual(): number {
     const actuals = this.monthlyData
       .filter(m => m.actual !== null)
@@ -487,13 +424,16 @@ updateChart() {
     return actuals.reduce((a, b) => a + b, 0) / actuals.length;
   }
   
-  getTotalForecast(): number {
-    const forecasts = this.monthlyData
-      .filter(m => m.predicted !== null)
-      .map(m => m.predicted as number);
-    if (forecasts.length === 0) return 0;
-    return forecasts.reduce((a, b) => a + b, 0);
-  }
+ getTotalForecast(): number {
+  // Возвращаем 0, если модель не обучена
+  if (!this.modelInfo?.exists) return 0;
+  
+  const forecasts = this.monthlyData
+    .filter(m => m.predicted !== null && m.actual === null)
+    .map(m => m.predicted as number);
+  if (forecasts.length === 0) return 0;
+  return forecasts.reduce((a, b) => a + b, 0);
+}
   
   getMaxMonthlyActual(): number {
     const actuals = this.monthlyData
@@ -503,7 +443,68 @@ updateChart() {
     return Math.max(...actuals);
   }
 
+   getMinMonthlyActual(): number {
+    const actuals = this.monthlyData
+      .filter(m => m.actual !== null)
+      .map(m => m.actual as number);
+    if (actuals.length === 0) return 0;
+    return Math.min(...actuals);
+  }
+  
   getForecastMonthsCount(): number {
-  return this.monthlyData.filter(m => m.predicted !== null && m.actual === null).length;
+    return this.monthlyData.filter(m => m.predicted !== null && m.actual === null).length;
+  }
+
+showForecast(): boolean {
+  return this.modelInfo?.exists === true && this.monthlyData.some(m => m.predicted !== null);
+}
+
+triggerTraining() {
+  if (!this.selectedStationId) return;
+  
+  this.isTraining = true;
+  this.errorMessage = null;
+  
+  this.forecastService.trainModel(this.selectedStationId, true).subscribe({
+    next: () => {
+      this.errorMessage = 'Обучение модели запущено. Это может занять несколько минут.';
+      this.isTraining = false;
+      // Проверяем статус
+      this.checkTrainingStatus();
+    },
+    error: (err) => {
+      this.errorMessage = 'Не удалось запустить обучение модели';
+      this.isTraining = false;
+      console.error('Training error:', err);
+    }
+  });
+}
+
+checkTrainingStatus() {
+  let attempts = 0;
+  const maxAttempts = 24; // 2 минуты
+  
+  const interval = setInterval(() => {
+    attempts++;
+    
+    this.forecastService.getModelInfo(this.selectedStationId).subscribe({
+      next: (info) => {
+        if (info.exists) {
+          clearInterval(interval);
+          this.isTraining = false;
+          this.errorMessage = 'Модель успешно обучена! Обновляем данные...';
+          this.loadData();
+          if (this.errorMessage === 'Модель успешно обучена! Обновляем данные...') {
+              this.errorMessage = null;
+            };
+        } else if (attempts >= maxAttempts) {
+          clearInterval(interval);
+          this.isTraining = false;
+          this.errorMessage = 'Обучение занимает больше времени, чем ожидалось';
+        }
+      },
+      error: () => {}
+    });
+  }, 5000);
 }
 }

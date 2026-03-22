@@ -549,7 +549,7 @@ addData() {
         const dateValue = row['Дата'] || row['дата'] || row['DATE'] || row['date'] || row['Месяц'] || row['месяц'] || row['День'] || row['день'];
         const consumptionValue = row['Расход газа'] || row['расход'] || row['CONSUMPTION'] || 
                                  row['consumption'] || row['Расход'] || row['расход газа'] || 
-                                 row['Газ'] || row['газ'];
+                                 row['Газ'] || row['газ'] || row['gas'] ;
         
         if (!dateValue) {
           errors.push(`Строка ${rowNumber}: не найдена колонка с датой`);
