@@ -97,12 +97,28 @@
         </div>
         
         <!-- Кнопка для принудительного обучения (только для админов) -->
-        <div class="admin-actions" *ngIf="modelInfo && !modelInfo.exists && modelInfo.dataPoints >= 30">
-          <button class="btn-train" (click)="triggerTraining()" [disabled]="isTraining">
-            <span *ngIf="!isTraining">Обучить модель сейчас</span>
-            <span *ngIf="isTraining">Обучение...</span>
-          </button>
-        </div>
+          <div class="admin-actions" *ngIf="modelInfo && !modelInfo.exists && modelInfo.dataPoints >= 30">
+            <button class="btn-train" (click)="triggerTrainingWithCheck()" [disabled]="isTraining || isCheckingData">
+              <span *ngIf="!isTraining && !isCheckingData">Обучить модель сейчас</span>
+              <span *ngIf="isTraining">Обучение...</span>
+              <span *ngIf="isCheckingData" class="loading-text">
+                <span class="spinner-small-white"></span>
+                Проверка данных...
+              </span>
+            </button>
+          </div>
+
+          <!-- Аналогично для уже обученных моделей (кнопка переобучения) -->
+          <div class="admin-actions" *ngIf="modelInfo && modelInfo.exists">
+            <button class="btn-train" (click)="triggerTrainingWithCheck()" [disabled]="isTraining || isCheckingData">
+              <span *ngIf="!isTraining && !isCheckingData">Переобучить модель</span>
+              <span *ngIf="isTraining">Обучение...</span>
+              <span *ngIf="isCheckingData" class="loading-text">
+                <span class="spinner-small-white"></span>
+                Проверка данных...
+              </span>
+            </button>
+          </div>
         
         <!-- Результат прогноза -->
         <div class="prediction-result" *ngIf="predictionResult && modelInfo?.exists">

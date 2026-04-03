@@ -5,6 +5,7 @@ import { Observable, throwError, of } from 'rxjs';
 import { catchError, map, timeout } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
+
 export interface ModelInfo {
   stationId: number;
   exists: boolean;
@@ -52,6 +53,62 @@ export interface TrainingStatus {
   message?: string;
   progress?: number;
   modelVersion?: string;
+}
+
+export interface AnomalyPoint {
+  date: string;
+  value: number;
+  is_anomaly: boolean;
+  is_warning: boolean;
+  z_score: number | null;
+  historical_mean: number | null;
+  historical_std: number | null;
+  history_count: number;
+  message: string;
+}
+
+export interface AnomalyCheckResponse {
+  stationId: number;
+  has_anomalies: boolean;
+  has_warnings: boolean;
+  total_checked: number;
+  anomaly_count: number;
+  warning_count: number;
+  anomalies: AnomalyPoint[];
+  recommendation: string;
+  can_proceed: boolean;
+  needs_confirmation: boolean;
+}
+
+export interface TrainWithCheckRequest {
+  stationId: number;
+  data: DailyData[];
+  forceRetrain?: boolean;
+  confirmAnomalies?: boolean;
+}
+
+export interface DailyData {
+  date: string;
+  consumption: number;
+}
+
+export interface TrainWithCheckResponse {
+  stationId: number;
+  status: string;
+  message: string;
+  requires_confirmation?: boolean;
+  anomaly_report?: AnomalyCheckResponse;
+}
+
+
+export interface DailyDataPoint {
+  date: string;
+  consumption: number;
+  is_anomaly?: boolean;
+  is_warning?: boolean;
+  z_score?: number | null;
+  historical_mean?: number | null;
+  historical_std?: number | null;
 }
 
 @Injectable({
@@ -122,7 +179,7 @@ export class Forecast {
       null,
       { params: { force: forceRetrain.toString() } }
     ).pipe(
-      timeout(5000),
+      timeout(10000),
       catchError(this.handleError<{ message: string; status: string }>('trainModel'))
     );
   }
@@ -158,7 +215,7 @@ export class Forecast {
    * Получить исторические данные для графика (агрегированные по месяцам)
    */
   getHistoricalMonthlyData(stationId: number, monthsBack: number = 6): Observable<MonthlyForecast[]> {
-    return this.http.get<MonthlyForecast[]>(`${this.apiUrl}/data/${stationId}/monthly`, {
+    return this.http.get<MonthlyForecast[]>(`${this.apiUrl}/forecast/data/${stationId}/monthly`, {
       params: { monthsBack: monthsBack.toString() }
     }).pipe(
       timeout(10000),
@@ -243,4 +300,40 @@ getCombinedData(stationId: number, forecastMonths: number = 3): Observable<{
       return throwError(() => new Error(errorMessage));
     };
   }
+
+checkDataForAnomalies(stationId: number, data: DailyData[]): Observable<AnomalyCheckResponse> {
+  return this.http.post<AnomalyCheckResponse>(`${this.apiUrl}/forecast/check-data`, {
+    stationId: stationId,
+    data: data
+  }).pipe(
+    timeout(15000),
+    catchError(this.handleError<AnomalyCheckResponse>('checkDataForAnomalies'))
+  );
+}
+
+/**
+ * Обучение модели с проверкой аномалий
+ */
+trainModelWithCheck(request: TrainWithCheckRequest): Observable<TrainWithCheckResponse> {
+  return this.http.post<TrainWithCheckResponse>(`${this.apiUrl}/forecast/train-with-check`, request)
+    .pipe(
+      timeout(30000),
+      catchError(this.handleError<TrainWithCheckResponse>('trainModelWithCheck'))
+    );
+}
+
+/**
+ * Получить ежедневные данные станции для проверки
+ */
+getStationDailyData(stationId: number, startDate?: string, endDate?: string): Observable<DailyData[]> {
+  let params: any = {};
+  if (startDate) params.startDate = startDate;
+  if (endDate) params.endDate = endDate;
+  
+  return this.http.get<DailyData[]>(`${this.apiUrl}/forecast/data/${stationId}/daily`, { params })
+    .pipe(
+      timeout(12000),
+      catchError(this.handleError<DailyData[]>('getStationDailyData', []))
+    );
+}
 }
