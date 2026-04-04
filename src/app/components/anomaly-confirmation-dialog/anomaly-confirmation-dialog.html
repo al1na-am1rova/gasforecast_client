@@ -1,17 +1,17 @@
 <div class="anomaly-dialog">
-      <div class="dialog-header" [class.has-anomalies]="data.has_anomalies">
+      <div class="dialog-header" [class.has-anomalies]="data.hasAnomalies">
         <div class="header-icon">
-          <svg *ngIf="data.has_anomalies" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg *ngIf="data.hasAnomalies" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="10"/>
             <line x1="12" y1="8" x2="12" y2="12"/>
             <line x1="12" y1="16" x2="12.01" y2="16"/>
           </svg>
-          <svg *ngIf="!data.has_anomalies && data.has_warnings" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg *ngIf="!data.hasAnomalies && data.hasWarnings" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M12 8v4M12 16h.01"/>
             <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/>
           </svg>
         </div>
-        <h2>{{ data.has_anomalies ? 'Обнаружены аномалии' : 'Обнаружены подозрительные значения' }}</h2>
+        <h2>{{ data.hasAnomalies ? 'Обнаружены аномалии' : 'Обнаружены подозрительные значения' }}</h2>
       </div>
       
       <div class="dialog-body">
@@ -20,15 +20,15 @@
         <div class="summary-stats">
           <div class="stat">
             <span class="stat-label">Проверено точек:</span>
-            <span class="stat-value">{{ data.total_checked }}</span>
+            <span class="stat-value">{{ data.totalChecked }}</span>
           </div>
-          <div class="stat" *ngIf="data.anomaly_count > 0">
+          <div class="stat" *ngIf="data.anomalyCount > 0">
             <span class="stat-label">Аномалий:</span>
-            <span class="stat-value anomaly">{{ data.anomaly_count }}</span>
+            <span class="stat-value anomaly">{{ data.anomalyCount }}</span>
           </div>
-          <div class="stat" *ngIf="data.warning_count > 0">
+          <div class="stat" *ngIf="data.warningCount > 0">
             <span class="stat-label">Предупреждений:</span>
-            <span class="stat-value warning">{{ data.warning_count }}</span>
+            <span class="stat-value warning">{{ data.warningCount }}</span>
           </div>
         </div>
         
@@ -61,7 +61,7 @@
           </button>
         </div>
         
-        <p class="hint" *ngIf="data.has_anomalies">
+        <p class="hint" *ngIf="data.hasAnomalies">
           Если вы уверены, что данные верны (например, был аварийный режим или особые условия работы), 
           подтвердите обучение. Если это ошибка — отмените и исправьте данные.
         </p>

@@ -69,15 +69,15 @@ export interface AnomalyPoint {
 
 export interface AnomalyCheckResponse {
   stationId: number;
-  has_anomalies: boolean;
-  has_warnings: boolean;
-  total_checked: number;
-  anomaly_count: number;
-  warning_count: number;
+  hasAnomalies: boolean;
+  hasWarnings: boolean;
+  totalChecked: number;
+  anomalyCount: number;
+  warningCount: number;
   anomalies: AnomalyPoint[];
   recommendation: string;
-  can_proceed: boolean;
-  needs_confirmation: boolean;
+  canProceed: boolean;
+  needsConfirmation: boolean;
 }
 
 export interface TrainWithCheckRequest {

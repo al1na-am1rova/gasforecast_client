@@ -226,6 +226,7 @@ export class GbForecast implements OnInit, OnChanges, AfterViewInit {
   // ===== ПРОВЕРКА АНОМАЛИЙ И ОБУЧЕНИЕ =====
   
   async triggerTrainingWithCheck() {
+    console.log("train with check");
     if (!this.selectedStationId) return;
     
     this.isCheckingData = true;
@@ -243,23 +244,30 @@ export class GbForecast implements OnInit, OnChanges, AfterViewInit {
       );
       
       if (!dailyData || dailyData.length === 0) {
+        console.log("no data");
         // Если нет новых данных, просто запускаем обучение
         this.triggerTrainingLegacy();
         return;
       }
       
+      console.log("checkResult");
       // 2. Проверяем данные на аномалии
       const checkResult = await firstValueFrom(
         this.forecastService.checkDataForAnomalies(this.selectedStationId, dailyData)
       );
-      
+      console.log(checkResult);
+
       if (!checkResult) {
         this.triggerTrainingLegacy();
         return;
       }
-      
+
+      console.log(checkResult.hasAnomalies);
+
       // 3. Если есть аномалии — показываем диалог
-      if (checkResult.has_anomalies || checkResult.has_warnings) {
+      if (checkResult.hasAnomalies || checkResult.hasWarnings) {
+
+        console.log("Open Dialog");
         this.pendingDataForTraining = dailyData.map(d => ({ date: d.date, consumption: d.consumption }));
         
         const dialogRef = this.dialog.open(AnomalyConfirmationDialog, {
