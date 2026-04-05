@@ -1,15 +1,6 @@
 <div class="anomaly-dialog">
       <div class="dialog-header" [class.has-anomalies]="data.hasAnomalies">
         <div class="header-icon">
-          <svg *ngIf="data.hasAnomalies" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/>
-            <line x1="12" y1="8" x2="12" y2="12"/>
-            <line x1="12" y1="16" x2="12.01" y2="16"/>
-          </svg>
-          <svg *ngIf="!data.hasAnomalies && data.hasWarnings" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 8v4M12 16h.01"/>
-            <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/>
-          </svg>
         </div>
         <h2>{{ data.hasAnomalies ? 'Обнаружены аномалии' : 'Обнаружены подозрительные значения' }}</h2>
       </div>
@@ -37,7 +28,7 @@
           <div class="anomaly-item" *ngFor="let anomaly of data.anomalies" 
                [class.anomaly]="anomaly.is_anomaly"
                [class.warning]="!anomaly.is_anomaly && anomaly.is_warning">
-            <div class="anomaly-date">{{ anomaly.date }}</div>
+            <div class="anomaly-date">Дата аномальной записи: {{ anomaly.date}}</div>
             <div class="anomaly-value">{{ anomaly.value | number:'1.1-2' }} тыс. м³</div>
             <div class="anomaly-norm" *ngIf="anomaly.historical_mean">
               норма: {{ anomaly.historical_mean | number:'1.1-2' }} ± {{ anomaly.historical_std | number:'1.1-2' }}
@@ -54,10 +45,7 @@
             Отмена, не обучать
           </button>
           <button class="btn-confirm" (click)="onConfirm()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="20 6 9 17 4 12"/>
-            </svg>
-            Да, данные корректны
+            Данные корректны, обучить модель
           </button>
         </div>
         
